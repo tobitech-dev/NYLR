@@ -45,63 +45,35 @@ F.forEach(function(x){
   el.id=el.name=x[0];box.appendChild(l);box.appendChild(el);
 });
 var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go');
-f.addEventListener('submit', async function(e) {
+f.addEventListener('submit', async function (e) {
   e.preventDefault();
   err.textContent = '';
-
   var data = {};
-  new FormData(f).forEach(function(v, k) {
-    data[k] = String(v).trim();
-  });
-
-  var miss = F.filter(function(x) {
-    return !OPT[x[0]] && !data[x[0]];
-  });
-
+  new FormData(f).forEach(function (v, k) { data[k] = String(v).trim(); });
+  var miss = F.filter(function (x) { return !OPT[x[0]] && !data[x[0]]; });
   if (miss.length) {
     err.textContent = 'Please fill in: ' + miss[0][1];
     document.getElementById(miss[0][0]).focus();
     return;
   }
-
   go.disabled = true;
   go.textContent = 'Submitting...';
-
   try {
-    var response = await fetch(
-      'https://nylr-2026.vercel.app/api/register',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      }
-    );
-
-    var text = await response.text();
-    var result;
-
-    try {
-      result = JSON.parse(text);
-    } catch {
-      throw new Error(
-        'The server returned an unexpected response. Please check the Vercel API deployment.'
-      );
-    }
-
+    var response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    var result = {};
+    try { result = await response.json(); } catch (x) {}
     if (!response.ok || !result.ok) {
-      throw new Error(result.error || 'Registration failed. Please try again.');
+      throw new Error(result.error || 'The server had a problem (code ' + response.status + '). Please try again.');
     }
-
     f.hidden = true;
     document.getElementById('ok').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
   } catch (error) {
-    err.textContent = error.message ||
-      'Network error. Please check your internet connection.';
-  } finally {
+    err.textContent = (error instanceof TypeError) ? 'Network error. Please check your internet connection.' : error.message;
     go.disabled = false;
     go.textContent = 'Submit registration';
   }
