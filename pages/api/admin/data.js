@@ -1,11 +1,11 @@
-const { ObjectId } = require('mongodb');
-const { db, api } = require('../../../lib/db');
-const { valid } = require('../../../lib/auth');
+import { ObjectId } from 'mongodb';
+import { db, api } from '../../../lib/db';
+import { valid } from '../../../lib/auth';
 const COLS = [['createdAt', 'Registered'], ['firstName', 'First name'], ['surname', 'Surname'], ['dob', 'Date of birth'], ['gender', 'Gender'], ['phone', 'Phone'], ['province', 'Province'], ['coordinatorName', 'Coordinator'], ['coordinatorPhone', 'Coordinator phone'], ['parentName', 'Parent name'], ['parentPhone', 'Parent phone'], ['academicLevel', 'Academic level'], ['allergies', 'Allergies'], ['health', 'Health challenges']];
 const val = (r, k) => (k === 'createdAt' ? new Date(r[k]).toISOString().slice(0, 16).replace('T', ' ') : String(r[k] == null ? '' : r[k]));
-const guard = (s) => (/^[=+\-@\t\r]/.test(s) && !/^\+?[\d\s()-]+$/.test(s) ? "'" + s : s);
+const guard = (s) => ('=+-@'.includes(s.charAt(0)) && s !== '' && !/^[+]?[0-9 ()-]+$/.test(s) ? "'" + s : s);
 const h = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-module.exports = api(async (req, res) => {
+export default api(async (req, res) => {
   if (!valid(req)) return res.status(401).json({ error: 'Not signed in' });
   res.setHeader('Cache-Control', 'no-store');
   const c = (await db()).collection('registrations');
@@ -22,7 +22,7 @@ module.exports = api(async (req, res) => {
     const lines = [COLS.map((x) => q(x[1])).join(',')].concat(rows.map((r) => COLS.map((x) => q(guard(val(r, x[0])))).join(',')));
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="nylr-registrations.csv"');
-    return res.send('\ufeff' + lines.join('\r\n'));
+    return res.send(String.fromCharCode(65279) + lines.join(String.fromCharCode(13, 10)));
   }
   if (f === 'xls') {
     const html = '<html><head><meta charset="utf-8"></head><body><table border="1"><tr>' + COLS.map((x) => '<th>' + h(x[1]) + '</th>').join('') + '</tr>' +
