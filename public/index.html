@@ -134,7 +134,7 @@ footer small{opacity:.7}
   <div class="cloud a"></div><div class="cloud b"></div><div class="cloud c"></div>
   <div class="topbar">
     <a class="brand" href="https://www.rccgdtceglobal.org" target="_blank" rel="noopener" aria-label="NYLR 2026, RCCG home">
-      <img src="images/logo.png" alt="RCCG logo" width="56" height="56" onerror="this.style.display='none'">
+      <img src="logo.png" alt="RCCG logo" width="56" height="56" onerror="this.style.display='none'">
       <span>National Young Leaders<br>Retreat 2026</span>
     </a>
   </div>
@@ -142,7 +142,7 @@ footer small{opacity:.7}
     <div class="flyer-wrap">
       <div class="flyer-glow"></div>
       <div class="flyer">
-        <img src="images/flyer.jpg" alt="NYLR 2026 flyer: Vessels Unto Honour, 6th to 8th November" width="900" height="1200" fetchpriority="high">
+        <img src="flyer.jpg" alt="NYLR 2026 flyer: Vessels Unto Honour, 6th to 8th November" width="900" height="1200" fetchpriority="high">
       </div>
     </div>
     <p class="hero-meta">6th to 8th November, 2026 | Redemption City</p>
@@ -264,9 +264,9 @@ var timer=setInterval(tick,1000);tick();
 
 /* 3. Past retreats gallery with like / unlike (saved in this browser) */
 var photos=[
-  {id:'p1',src:'images/a.png',alt:'Past retreat photo 1'},
-  {id:'p2',src:'images/b.png',alt:'Past retreat photo 2'},
-  {id:'p3',src:'images/c.png',alt:'Past retreat photo 3'}
+  {id:'p1',src:'a.png',alt:'Past retreat photo 1'},
+  {id:'p2',src:'b.png',alt:'Past retreat photo 2'},
+  {id:'p3',src:'c.png',alt:'Past retreat photo 3'}
 ];
 var voter;
 try{voter=localStorage.getItem('nylr_voter');if(!voter){voter=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2)+Date.now();localStorage.setItem('nylr_voter',voter)}}catch(e){voter='anon'+Math.random()}
