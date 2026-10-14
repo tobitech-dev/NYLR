@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Team</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{font-family:system-ui,sans-serif;background:#f6efe6;color:#2a1006;padding:1rem}
+.box{max-width:340px;margin:20vh auto;background:#fff;padding:1.5rem;border-radius:16px;box-shadow:0 10px 30px rgba(74,28,11,.2)}
+input,select,button{font:inherit;padding:.7rem .9rem;border-radius:10px;border:1.5px solid #d9c4ae}
+.box input{width:100%;margin:.8rem 0}
+button{background:#4a1c0b;color:#fff;border:0;cursor:pointer}
+.bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1rem 0}
+.bar input,.bar select{flex:1 1 160px}
+.bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.7rem 1rem;border-radius:10px;font-weight:700}
+.wrap{overflow-x:auto;background:#fff;border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:.55rem .7rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
+th{background:#4a1c0b;color:#fff;position:sticky;top:0}
+td button{padding:.3rem .6rem;background:#c0392b}
+#msg{color:#c0392b;font-weight:700;margin-top:.5rem}
+</style></head>
+<body>
+<div class="box" id="login"><h2>Team access</h2><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="in">Sign in</button><p id="msg"></p></div>
+<div id="app" hidden>
+<h2>Registrations: <span id="count">0</span></h2>
+<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select>
+<a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a></div>
+<div class="wrap"><table id="t"></table></div></div>
+<script>
+var rows=[],H=['Registered','First name','Surname','Date of birth','Gender','Phone','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges'];
+var K=['createdAt','firstName','surname','dob','gender','phone','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health'];
+var $=function(i){return document.getElementById(i)};
+function login(){
+  fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
+  .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error);})})
+  .then(load).catch(function(e){$('msg').textContent=e.message||'Error'});
+}
+function load(){
+  fetch('/api/admin/data').then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
+    rows=d.rows;$('login').hidden=true;$('app').hidden=false;
+    var ps={};rows.forEach(function(r){if(r.province)ps[r.province]=1});
+    $('prov').length=1;Object.keys(ps).sort().forEach(function(p){var o=document.createElement('option');o.value=o.textContent=p;$('prov').appendChild(o)});
+    draw();
+  }).catch(function(){});
+}
+function draw(){
+  var q=$('q').value.toLowerCase(),p=$('prov').value;
+  var list=rows.filter(function(r){return(!p||r.province===p)&&(!q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1}))});
+  $('count').textContent=list.length+(list.length!==rows.length?' of '+rows.length:'');
+  var t=$('t');t.textContent='';
+  var tr=t.insertRow();H.concat(['']).forEach(function(h){var th=document.createElement('th');th.textContent=h;tr.appendChild(th)});
+  list.forEach(function(r){
+    var row=t.insertRow();K.forEach(function(k){row.insertCell().textContent=r[k]});
+    var b=document.createElement('button');b.textContent='Delete';
+    b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))fetch('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
+    row.insertCell().appendChild(b);
+  });
+}
+$('in').onclick=login;$('pw').onkeydown=function(e){if(e.key==='Enter')login()};
+$('q').oninput=draw;$('prov').onchange=draw;load();
+</script></body></html>

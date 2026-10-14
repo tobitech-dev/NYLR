@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NYLR 2026 | Vessels Unto Honour</title>
+<meta name="description" content="National Young Leaders Retreat 2026. Vessels Unto Honour. 6th to 8th November, Redemption City.">
+<meta name="theme-color" content="#3b1608">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2a1006;--brown:#4a1c0b;--clay:#7a3414;--gold:#e9a319;--gold-soft:#ffd36b;
+  --sky:#8cc9f5;--sky-pale:#e9f5fe;--paper:#fffaf1;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Nunito Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.65;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1080px,100% - 2.5rem);margin-inline:auto}
+h1,h2,h3{font-family:var(--serif);line-height:1.1;color:var(--brown)}
+h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:1rem}
+.hero{position:relative;padding:calc(1rem + env(safe-area-inset-top,0px)) 0 3.5rem;background:linear-gradient(180deg,var(--sky) 0%,#cfe9fb 55%,var(--paper) 100%);text-align:center;overflow:hidden}
+.cloud{position:absolute;border-radius:50%;background:#fff;filter:blur(38px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
+.cloud.a{width:240px;height:120px;top:6%;left:-60px}
+.cloud.b{width:300px;height:140px;top:38%;right:-90px;animation-duration:28s}
+.cloud.c{width:200px;height:100px;bottom:8%;left:12%;animation-duration:25s}
+@keyframes drift{to{transform:translateX(70px)}}
+.topbar{position:relative;display:flex;align-items:center;justify-content:flex-start;padding:0 1rem;margin-bottom:1.2rem;animation:rise .8s var(--ease) both}
+.brand{display:flex;align-items:center;gap:.7rem;text-align:left;text-decoration:none;font-weight:700;color:var(--brown);line-height:1.2;font-size:.95rem}
+.brand img{width:56px;height:56px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;box-shadow:0 4px 12px rgba(74,28,11,.25)}
+.social{display:flex;gap:.5rem}
+.social a{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.85);color:var(--brown);box-shadow:0 4px 10px rgba(74,28,11,.15);transition:transform .25s var(--ease),background .25s,color .25s}
+.social a:hover{transform:translateY(-3px) scale(1.08);background:var(--brown);color:var(--gold-soft)}
+.social svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{position:relative;font-weight:700;color:var(--clay);font-size:1rem;margin-bottom:1.2rem}
+.flyer-wrap{position:relative;width:min(440px,88vw);margin:0 auto;perspective:900px}
+.flyer-glow{position:absolute;inset:8% 6% -4%;background:radial-gradient(circle,var(--gold-soft),transparent 68%);filter:blur(30px);opacity:.8;animation:pulse 4.5s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.4;transform:scale(1.06)}}
+.flyer{position:relative;border-radius:18px;overflow:hidden;border:4px solid #fff;box-shadow:0 24px 50px rgba(74,28,11,.35);aspect-ratio:3/4;background:linear-gradient(160deg,#f6c76a,#7a3414);transition:transform .5s var(--ease);animation:rise 1s var(--ease) both,float 6s ease-in-out 1s infinite}
+.flyer:hover{transform:rotateY(-6deg) rotateX(3deg) scale(1.02)}
+.flyer img{width:100%;height:100%;object-fit:cover}
+@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.94)}}
+@keyframes float{50%{transform:translateY(-8px)}}
+.hero-meta{position:relative;margin-top:1.8rem;font-weight:600;color:var(--brown)}
+.btn{display:inline-block;position:relative;overflow:hidden;text-decoration:none;font-weight:700;font-size:1.05rem;padding:1rem 2.4rem;border-radius:999px;color:#fff;background:linear-gradient(135deg,var(--clay),var(--brown));box-shadow:0 10px 24px rgba(74,28,11,.35),inset 0 0 0 2px var(--gold);transition:transform .25s var(--ease),box-shadow .25s}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,211,107,.55) 50%,transparent 70%);transform:translateX(-120%);animation:shine 3.6s ease-in-out infinite}
+@keyframes shine{60%,100%{transform:translateX(120%)}}
+.btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 30px rgba(74,28,11,.4),inset 0 0 0 2px var(--gold)}
+.btn:active{transform:scale(.97)}
+.hero .btn{margin-top:1rem}
+.count{background:var(--brown);color:#fff;padding:2.6rem 0;text-align:center}
+.count h2{color:var(--gold-soft);font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:1.4rem}
+.clock{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;max-width:520px;margin:auto}
+.tick{background:rgba(255,255,255,.08);border:1px solid rgba(255,211,107,.35);border-radius:14px;padding:.9rem .2rem}
+.tick b{display:block;font-family:var(--serif);font-size:clamp(2rem,9vw,3.2rem);color:var(--gold-soft);line-height:1;transition:transform .3s var(--ease)}
+.tick b.flip{transform:translateY(-6px) scale(1.12)}
+.tick span{font-size:.85rem;opacity:.85}
+.live{font-family:var(--serif);font-size:1.8rem;color:var(--gold-soft)}
+section{padding:4rem 0}
+.about p{max-width:62ch;font-size:1.1rem}
+.verse{margin-top:1.6rem;padding:1.3rem 1.5rem;border-left:5px solid var(--gold);background:var(--sky-pale);border-radius:0 14px 14px 0;font-family:var(--serif);font-size:1.35rem;color:var(--brown);max-width:62ch}
+.verse small{display:block;font-family:var(--sans);font-size:.9rem;font-weight:700;color:var(--clay);margin-top:.4rem}
+.expect{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:2rem;max-width:62ch}
+.expect div{background:#fff;border:1px solid rgba(122,52,20,.15);border-radius:16px;padding:1rem;transition:transform .35s var(--ease),box-shadow .35s}
+.expect div:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(74,28,11,.14)}
+.expect h3{font-size:1.25rem;margin-bottom:.2rem}
+.expect p{font-size:.95rem;line-height:1.5}
+.details{background:linear-gradient(180deg,var(--paper),var(--sky-pale))}
+.facts{display:grid;gap:1rem;grid-template-columns:1fr}
+.fact{background:#fff;border-radius:18px;padding:1.5rem;border:1px solid rgba(122,52,20,.15);transition:transform .35s var(--ease),box-shadow .35s}
+.fact:hover{transform:translateY(-5px);box-shadow:0 16px 30px rgba(74,28,11,.15)}
+.fact h3{font-size:1.5rem;margin-bottom:.3rem}
+.fact svg{width:34px;height:34px;stroke:var(--gold);fill:none;stroke-width:1.8;margin-bottom:.6rem}
+.fact a.link{display:inline-block;margin-top:.7rem;font-weight:700;color:var(--clay);text-underline-offset:4px}
+.grid{column-count:1;column-gap:1rem}
+.shot{position:relative;border-radius:18px;overflow:hidden;min-height:180px;margin:0 0 1rem;break-inside:avoid;background:linear-gradient(135deg,#f6c76a,#7a3414);box-shadow:0 10px 24px rgba(74,28,11,.18)}
+.shot.loaded{min-height:0;background:#fff}
+.shot img{width:100%;height:auto;transition:transform .7s var(--ease)}
+.shot:hover img{transform:scale(1.07)}
+.shot .ph{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-family:var(--serif);font-size:1.4rem;opacity:.85}
+.like{position:absolute;right:.8rem;bottom:.8rem;display:flex;align-items:center;gap:.4rem;border:0;cursor:pointer;font:700 .9rem var(--sans);color:var(--brown);background:rgba(255,255,255,.92);padding:.6rem 1rem;border-radius:999px;transition:transform .2s var(--ease),background .3s}
+.like:active{transform:scale(.92)}
+.like svg{width:22px;height:22px;stroke:var(--clay);stroke-width:2;fill:transparent;transition:fill .25s,stroke .25s}
+.like.on{background:var(--brown);color:#fff}
+.like.on svg{fill:#ff5a6e;stroke:#ff5a6e;animation:pop .45s var(--ease)}
+@keyframes pop{30%{transform:scale(1.6)}60%{transform:scale(.9)}}
+.faq{background:var(--sky-pale)}
+details{background:#fff;border-radius:14px;margin-bottom:.8rem;border:1px solid rgba(122,52,20,.15);overflow:hidden;transition:box-shadow .3s}
+details[open]{box-shadow:0 10px 22px rgba(74,28,11,.12)}
+summary{list-style:none;cursor:pointer;padding:1.1rem 1.3rem;font-weight:700;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.5rem;color:var(--gold);transition:transform .3s var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 1.3rem 1.2rem;animation:open .4s var(--ease)}
+@keyframes open{from{opacity:0;transform:translateY(-6px)}}
+footer{background:var(--brown);color:#fff;text-align:center;padding:3rem 0 6rem}
+footer h2{color:var(--gold-soft);font-size:2rem}
+footer a{display:block;color:var(--gold-soft);text-underline-offset:4px;margin:.3rem 0;word-break:break-word}
+footer .social{justify-content:center;margin-top:1rem}
+footer .btn{margin:1.4rem 0 1.6rem;color:#fff}
+footer small{opacity:.7}
+
+/* Sticky button */
+.sticky{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;transform:translate(-50%,140%);transition:transform .5s var(--ease);padding:.9rem 2rem}
+.sticky.show{transform:translate(-50%,0)}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+@media(min-width:720px){
+  .facts{grid-template-columns:repeat(3,1fr)}
+  .grid{column-count:2}
+  section{padding:5.5rem 0}
+  .hero{padding-top:1.2rem}
+}
+@media(min-width:960px){.grid{column-count:3}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="cloud a"></div><div class="cloud b"></div><div class="cloud c"></div>
+  <div class="topbar">
+    <a class="brand" href="https://www.rccgdtceglobal.org" target="_blank" rel="noopener" aria-label="NYLR 2026, RCCG home">
+      <img src="images/logo.png" alt="RCCG logo" width="56" height="56" onerror="this.style.display='none'">
+      <span>National Young Leaders<br>Retreat 2026</span>
+    </a>
+  </div>
+  <div class="wrap">
+    <div class="flyer-wrap">
+      <div class="flyer-glow"></div>
+      <div class="flyer">
+        <img src="images/flyer.jpg" alt="NYLR 2026 flyer: Vessels Unto Honour, 6th to 8th November" width="900" height="1200" fetchpriority="high">
+      </div>
+    </div>
+    <p class="hero-meta">6th to 8th November, 2026 | Redemption City</p>
+    <a class="btn" id="heroBtn" href="/register">Register now</a>
+  </div>
+</header>
+
+<div class="count" id="count">
+  <div class="wrap">
+    <h2 id="countTitle">The retreat begins in</h2>
+    <div class="clock" id="clock">
+      <div class="tick"><b id="d">0</b><span>Days</span></div>
+      <div class="tick"><b id="h">0</b><span>Hours</span></div>
+      <div class="tick"><b id="m">0</b><span>Minutes</span></div>
+      <div class="tick"><b id="s">0</b><span>Seconds</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="about">
+  <div class="wrap reveal">
+    <h2>Vessels Unto Honour</h2>
+    <p>NYLR is the National Young Leaders Retreat of the Redeemed Christian Church of God, brought to you by DTCE Global. It gathers young leaders for three days, from 6th to 8th November, 2026, at Redemption City, and it is held on a country and regional basis.</p>
+    <p style="margin-top:1rem">This year's theme, Vessels Unto Honour, comes from 2 Timothy 2:20-21. In a great house there are vessels of gold, silver, wood, and earth, and the passage shows that a person who stays clean and set apart becomes a vessel fit for the Master's use. The retreat is about becoming that kind of leader: pure, prepared, and ready for every good work.</p>
+    <blockquote class="verse">If a man therefore purge himself from these, he shall be a vessel unto honour, sanctified, and meet for the master's use, and prepared unto every good work.<small>2 Timothy 2:20-21</small></blockquote>
+    <div class="expect">
+      <div><h3>The Word</h3><p>Teaching rooted in scripture and built around the theme.</p></div>
+      <div><h3>Worship and prayer</h3><p>Time set apart to seek God together.</p></div>
+      <div><h3>Fellowship</h3><p>Meet young leaders from other provinces and regions.</p></div>
+      <div><h3>Leadership growth</h3><p>Be equipped to lead with honour at church, school, and home.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="details">
+  <div class="wrap reveal">
+    <h2>Plan your visit</h2>
+    <div class="facts">
+      <div class="fact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+        <h3>Dates</h3><p>6th to 8th November, 2026</p>
+      </div>
+      <div class="fact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+        <h3>Venue</h3><p>Redemption City</p>
+        <a class="link" href="https://www.google.com/maps/search/?api=1&query=Redemption+City" target="_blank" rel="noopener">Get directions</a>
+      </div>
+      <div class="fact">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.500 2.400 6.500 6M16 5a3.500 3.500 0 0 1 0 6.500M18 14.500c2 .8 3.500 2.600 3.500 5.500"/></svg>
+        <h3>Who it's for</h3><p>Young leaders, registered through their province coordinator.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap reveal">
+    <h2>Moments from past retreats</h2>
+    <div class="grid" id="gallery"></div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap reveal">
+    <h2>Questions</h2>
+    <details><summary>How do I register?</summary><p>Tap Register now, fill in the form, and submit. It takes about two minutes.</p></details>
+    <details><summary>What details do I need?</summary><p>Your name, date of birth, phone number, province, your provincial coordinator's name and number, your parent's name and number, and your academic level.</p></details>
+    <details><summary>Why are allergies and health challenges asked?</summary><p>So the team can look after every participant properly. Both fields are optional.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h2>Be there</h2>
+    <nav class="social" aria-label="Social media">
+        <a href="https://www.instagram.com/rccgdtceglobal" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg></a>
+        <a href="https://www.facebook.com/rccgdtceglobal" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8.500c0-.300.200-.500.500-.500z"/></svg></a>
+        <a href="https://x.com/rccgdtceglobal" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+        <a href="https://www.youtube.com/@rccgdtceglobal" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z"/></svg></a>
+      </nav>
+    <a class="btn" href="/register">Register now</a>
+    <a href="https://www.rccgdtceglobal.org" target="_blank" rel="noopener">www.rccgdtceglobal.org</a>
+    <a href="mailto:directordtce@gmail.com">directordtce@gmail.com</a>
+    <a href="https://www.instagram.com/rccgdtceglobal" target="_blank" rel="noopener">@rccgdtceglobal</a>
+    <p style="margin-top:2rem"><small>The Redeemed Christian Church of God, DTCE Global</small></p>
+  </div>
+</footer>
+
+<a class="btn sticky" id="sticky" href="/register">Register now</a>
+
+<script>
+/* 1. Flyer fallback if the image file is missing */
+var flyerImg=document.querySelector('.flyer img');
+flyerImg.addEventListener('error',function(){flyerImg.style.display='none'});
+
+/* 2. Countdown to 6th November 2026, 00:00 Nigerian time */
+var target=new Date('2026-11-06T00:00:00+01:00').getTime();
+var ids=['d','h','m','s'].map(function(i){return document.getElementById(i)});
+var last=[];
+function pad(n){return String(n)}
+function tick(){
+  var diff=target-Date.now();
+  if(diff<=0){
+    document.getElementById('countTitle').textContent='The retreat is live';
+    document.getElementById('clock').innerHTML='<p class="live">6th to 8th November, Redemption City</p>';
+    clearInterval(timer);return;
+  }
+  var v=[Math.floor(diff/864e5),Math.floor(diff/36e5)%24,Math.floor(diff/6e4)%60,Math.floor(diff/1e3)%60];
+  v.forEach(function(n,i){
+    if(last[i]!==n){
+      ids[i].textContent=pad(n);
+      ids[i].classList.add('flip');
+      (function(el){setTimeout(function(){el.classList.remove('flip')},300)})(ids[i]);
+      last[i]=n;
+    }
+  });
+}
+var timer=setInterval(tick,1000);tick();
+
+/* 3. Past retreats gallery with like / unlike (saved in this browser) */
+var photos=[
+  {id:'p1',src:'images/a.png',alt:'Past retreat photo 1'},
+  {id:'p2',src:'images/b.png',alt:'Past retreat photo 2'},
+  {id:'p3',src:'images/c.png',alt:'Past retreat photo 3'}
+];
+var voter;
+try{voter=localStorage.getItem('nylr_voter');if(!voter){voter=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2)+Date.now();localStorage.setItem('nylr_voter',voter)}}catch(e){voter='anon'+Math.random()}
+var counts={},mine={},paints=[];
+var gallery=document.getElementById('gallery');
+photos.forEach(function(p){
+  var fig=document.createElement('figure');fig.className='shot';
+  fig.innerHTML='<div class="ph">Past retreat</div><img src="'+p.src+'" alt="'+p.alt+'" loading="lazy">'+
+  '<button class="like" type="button" aria-pressed="false" aria-label="Like this photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.500-4.600-9.500-9.200C1.300 8.800 3 5.500 6.300 5.500c2 0 3.500 1.100 5.700 3.500 2.200-2.400 3.700-3.500 5.700-3.500 3.300 0 5 3.300 3.800 6.300C19.500 16.400 12 21 12 21z"/></svg><span>0</span></button>';
+  var img=fig.querySelector('img'),btn=fig.querySelector('.like'),label=btn.querySelector('span');
+  img.addEventListener('error',function(){img.style.display='none'});
+  img.addEventListener('load',function(){fig.querySelector('.ph').style.display='none';fig.classList.add('loaded')});
+  function paint(){var on=!!mine[p.id];btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on);label.textContent=counts[p.id]||0}
+  paints.push(paint);
+  btn.addEventListener('click',function(){
+    var on=!mine[p.id];mine[p.id]=on;counts[p.id]=Math.max(0,(counts[p.id]||0)+(on?1:-1));paint();
+    fetch('/api/likes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:p.id,voter:voter,like:on})})
+    .then(function(r){if(!r.ok)throw 0;return r.json()})
+    .then(function(d){counts[p.id]=d.count;paint()})
+    .catch(function(){mine[p.id]=!on;counts[p.id]=Math.max(0,(counts[p.id]||0)+(on?-1:1));paint()});
+  });
+  paint();gallery.appendChild(fig);
+});
+fetch('/api/likes?voter='+encodeURIComponent(voter)).then(function(r){return r.json()}).then(function(d){
+  counts=d.counts||{};mine=d.mine||{};paints.forEach(function(f){f()});
+}).catch(function(){});
+
+/* 4. Scroll reveal */
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+/* 5. Sticky register button: show once the hero button is out of view */
+var sticky=document.getElementById('sticky');
+new IntersectionObserver(function(es){
+  sticky.classList.toggle('show',!es[0].isIntersecting);
+}).observe(document.getElementById('heroBtn'));
+</script>
+</body>
+</html>
