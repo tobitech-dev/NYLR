@@ -1,11 +1,11 @@
-const { db, api } = require('../../lib/db');
+import { db, api } from '../../lib/db';
 
 const LEVELS = ['Secondary school', 'Awaiting Admission', 'Undergraduate', 'Graduate'];
 const PHONE = /^[+]?[0-9 -]{7,18}$/;
 const DOB = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 const t = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
-module.exports = api(async (req, res) => {
+export default api(async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed.' });
