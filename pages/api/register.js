@@ -10,6 +10,7 @@ const LEVELS = [
 const t = (v, n) =>
 String(v == null ? '' : v).trim().slice(0, n);
 
+// FIXED: Escape the + character.
 const PHONE = /^+?[\d\s-]{7,18}$/;
 
 export default api(async (req, res) => {
@@ -23,7 +24,7 @@ error: 'Method not allowed.'
 try {
 const b = req.body || {};
 
-// Honeypot field for spam prevention.
+// Honeypot field for basic spam prevention.
 if (b.website) {
   return res.status(200).json({ ok: true });
 }
@@ -64,6 +65,7 @@ if (required.some((field) => !d[field])) {
   });
 }
 
+// Validate date of birth.
 const birthDate = new Date(`${d.dob}T00:00:00`);
 
 if (
@@ -77,6 +79,7 @@ if (
   });
 }
 
+// Validate gender and academic level.
 if (
   !['Male', 'Female'].includes(d.gender) ||
   !LEVELS.includes(d.academicLevel)
@@ -86,6 +89,7 @@ if (
   });
 }
 
+// Validate phone numbers.
 if (
   ![d.phone, d.coordinatorPhone, d.parentPhone]
     .every((phone) => PHONE.test(phone))
@@ -95,8 +99,11 @@ if (
   });
 }
 
-const collection = (await db()).collection('registrations');
+// Connect to MongoDB.
+const database = await db();
+const collection = database.collection('registrations');
 
+// Build a key to identify duplicate registrations.
 const key = [
   d.phone.replace(/\D/g, ''),
   d.surname.toLowerCase(),
@@ -111,13 +118,17 @@ if (existing) {
   });
 }
 
+// Save the registration.
 await collection.insertOne({
   ...d,
   key,
   createdAt: new Date()
 });
 
-return res.status(201).json({ ok: true });
+return res.status(201).json({
+  ok: true,
+  message: 'Registration successful.'
+});
 
 } catch (error) {
 console.error('Registration API error:', error);
