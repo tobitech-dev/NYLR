@@ -28,8 +28,8 @@ td button{padding:.3rem .6rem;background:#c0392b}
 <a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a></div>
 <div class="wrap"><table id="t"></table></div></div>
 <script>
-var rows=[],H=['Registered','First name','Surname','Date of birth','Gender','Phone','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges'];
-var K=['createdAt','firstName','surname','dob','gender','phone','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health'];
+var rows=[],H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges'];
+var K=['createdAt','firstName','surname','dob','gender','phone','email','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health'];
 var $=function(i){return document.getElementById(i)};
 function login(){
   fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
