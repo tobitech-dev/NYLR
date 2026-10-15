@@ -23,16 +23,18 @@ button:active{transform:scale(.97)}button:disabled{opacity:.6}
 a{color:var(--clay);font-weight:700}
 </style></head>
 <body><div class="card">
+<div id="top">
 <a href="/">Back to home</a>
 <h1 style="margin-top:1rem">Register for NYLR 2026</h1>
 <p class="sub">Vessels Unto Honour | 6th to 8th November</p>
+</div>
 <form id="f" novalidate><input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><div id="fields"></div>
 <label class="chk"><input type="checkbox" id="consent" name="consent" value="yes"><span>I agree to receive updates about NYLR 2026 by email. <i>*</i></span></label>
 <p class="err" id="err" role="alert"></p><button id="go" type="submit">Submit registration</button></form>
 <div class="ok" id="ok" hidden><h2>You're registered</h2><p>Thank you. We look forward to seeing you at the retreat.</p><a href="/">Back to home</a></div>
 </div>
 <script>
-/* Add the real province names here, e.g. var PROVINCES=['Province 1','Province 2']; If empty, a text box shows instead. */
+
 var PROVINCES=[];
 var F=[['firstName','First name','text'],['surname','Surname','text'],['dob','Date of birth','date'],['gender','Gender','select',['Male','Female']],['phone','Phone number','tel'],['email','Email address','email'],['province','Select your province','province'],['coordinatorName','Name of Provincial Coordinator','text'],['coordinatorPhone','Phone number of Provincial Coordinator','tel'],['parentName',"Parent's name",'text'],['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],['parentPhone',"Parent's phone number",'tel'],['allergies','Any allergies? If yes, please share details','textarea'],['health','Any health challenges? If yes, please share details','textarea']];
 var OPT={allergies:1,health:1},box=document.getElementById('fields');
@@ -76,6 +78,7 @@ f.addEventListener('submit', async function (e) {
       throw new Error(result.error || 'The server had a problem (code ' + response.status + '). Please try again.');
     }
     f.hidden = true;
+    document.getElementById('top').hidden = true;
     document.getElementById('ok').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) {
