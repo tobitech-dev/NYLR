@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { db, api } from '../../../lib/db';
 import { valid } from '../../../lib/auth';
-const COLS = [['createdAt', 'Registered'], ['firstName', 'First name'], ['surname', 'Surname'], ['dob', 'Date of birth'], ['gender', 'Gender'], ['phone', 'Phone'], ['province', 'Province'], ['coordinatorName', 'Coordinator'], ['coordinatorPhone', 'Coordinator phone'], ['parentName', 'Parent name'], ['parentPhone', 'Parent phone'], ['academicLevel', 'Academic level'], ['allergies', 'Allergies'], ['health', 'Health challenges']];
+const COLS = [['createdAt', 'Registered'], ['firstName', 'First name'], ['surname', 'Surname'], ['dob', 'Date of birth'], ['gender', 'Gender'], ['phone', 'Phone'], ['email', 'Email'], ['province', 'Province'], ['coordinatorName', 'Coordinator'], ['coordinatorPhone', 'Coordinator phone'], ['parentName', 'Parent name'], ['parentPhone', 'Parent phone'], ['academicLevel', 'Academic level'], ['allergies', 'Allergies'], ['health', 'Health challenges']];
 const val = (r, k) => (k === 'createdAt' ? new Date(r[k]).toISOString().slice(0, 16).replace('T', ' ') : String(r[k] == null ? '' : r[k]));
 const guard = (s) => ('=+-@'.includes(s.charAt(0)) && s !== '' && !/^[+]?[0-9 ()-]+$/.test(s) ? "'" + s : s);
 const h = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
