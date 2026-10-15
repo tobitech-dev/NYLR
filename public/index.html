@@ -26,6 +26,7 @@ a{color:inherit}
 .wrap{width:min(1080px,100% - 2.5rem);margin-inline:auto}
 h1,h2,h3{font-family:var(--serif);line-height:1.1;color:var(--brown)}
 h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:1rem}
+
 .hero{position:relative;padding:calc(1rem + env(safe-area-inset-top,0px)) 0 3.5rem;background:linear-gradient(180deg,var(--sky) 0%,#cfe9fb 55%,var(--paper) 100%);text-align:center;overflow:hidden}
 .cloud{position:absolute;border-radius:50%;background:#fff;filter:blur(38px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
 .cloud.a{width:240px;height:120px;top:6%;left:-60px}
@@ -55,6 +56,7 @@ h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:1rem}
 .btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 30px rgba(74,28,11,.4),inset 0 0 0 2px var(--gold)}
 .btn:active{transform:scale(.97)}
 .hero .btn{margin-top:1rem}
+
 .count{background:var(--brown);color:#fff;padding:2.6rem 0;text-align:center}
 .count h2{color:var(--gold-soft);font-size:clamp(1.6rem,5vw,2.2rem);margin-bottom:1.4rem}
 .clock{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;max-width:520px;margin:auto}
@@ -63,6 +65,7 @@ h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:1rem}
 .tick b.flip{transform:translateY(-6px) scale(1.12)}
 .tick span{font-size:.85rem;opacity:.85}
 .live{font-family:var(--serif);font-size:1.8rem;color:var(--gold-soft)}
+
 section{padding:4rem 0}
 .about p{max-width:62ch;font-size:1.1rem}
 .verse{margin-top:1.6rem;padding:1.3rem 1.5rem;border-left:5px solid var(--gold);background:var(--sky-pale);border-radius:0 14px 14px 0;font-family:var(--serif);font-size:1.35rem;color:var(--brown);max-width:62ch}
@@ -79,6 +82,7 @@ section{padding:4rem 0}
 .fact h3{font-size:1.5rem;margin-bottom:.3rem}
 .fact svg{width:34px;height:34px;stroke:var(--gold);fill:none;stroke-width:1.8;margin-bottom:.6rem}
 .fact a.link{display:inline-block;margin-top:.7rem;font-weight:700;color:var(--clay);text-underline-offset:4px}
+
 .grid{column-count:1;column-gap:1rem}
 .shot{position:relative;border-radius:18px;overflow:hidden;min-height:180px;margin:0 0 1rem;break-inside:avoid;background:linear-gradient(135deg,#f6c76a,#7a3414);box-shadow:0 10px 24px rgba(74,28,11,.18)}
 .shot.loaded{min-height:0;background:#fff}
@@ -91,6 +95,7 @@ section{padding:4rem 0}
 .like.on{background:var(--brown);color:#fff}
 .like.on svg{fill:#ff5a6e;stroke:#ff5a6e;animation:pop .45s var(--ease)}
 @keyframes pop{30%{transform:scale(1.6)}60%{transform:scale(.9)}}
+
 .faq{background:var(--sky-pale)}
 details{background:#fff;border-radius:14px;margin-bottom:.8rem;border:1px solid rgba(122,52,20,.15);overflow:hidden;transition:box-shadow .3s}
 details[open]{box-shadow:0 10px 22px rgba(74,28,11,.12)}
@@ -100,6 +105,7 @@ summary::after{content:"+";font-size:1.5rem;color:var(--gold);transition:transfo
 details[open] summary::after{transform:rotate(45deg)}
 details p{padding:0 1.3rem 1.2rem;animation:open .4s var(--ease)}
 @keyframes open{from{opacity:0;transform:translateY(-6px)}}
+
 footer{background:var(--brown);color:#fff;text-align:center;padding:3rem 0 6rem}
 footer h2{color:var(--gold-soft);font-size:2rem}
 footer a{display:block;color:var(--gold-soft);text-underline-offset:4px;margin:.3rem 0;word-break:break-word}
@@ -107,11 +113,9 @@ footer .social{justify-content:center;margin-top:1rem}
 footer .btn{margin:1.4rem 0 1.6rem;color:#fff}
 footer small{opacity:.7}
 
-/* Sticky button */
 .sticky{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;transform:translate(-50%,140%);transition:transform .5s var(--ease);padding:.9rem 2rem}
 .sticky.show{transform:translate(-50%,0)}
 
-/* Scroll reveal */
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .reveal.in{opacity:1;transform:none}
 
@@ -142,7 +146,7 @@ footer small{opacity:.7}
     <div class="flyer-wrap">
       <div class="flyer-glow"></div>
       <div class="flyer">
-        <img src="flyer.jpg" alt="NYLR 2026 flyer: Vessels Unto Honour, 6th to 8th November" width="900" height="1200" fetchpriority="high">
+        <img src="images/flyer.jpg" alt="NYLR 2026 flyer: Vessels Unto Honour, 6th to 8th November" width="900" height="1200" fetchpriority="high">
       </div>
     </div>
     <p class="hero-meta">6th to 8th November, 2026 | Redemption City</p>
@@ -234,11 +238,10 @@ footer small{opacity:.7}
 <a class="btn sticky" id="sticky" href="/register">Register now</a>
 
 <script>
-/* 1. Flyer fallback if the image file is missing */
+
 var flyerImg=document.querySelector('.flyer img');
 flyerImg.addEventListener('error',function(){flyerImg.style.display='none'});
 
-/* 2. Countdown to 6th November 2026, 00:00 Nigerian time */
 var target=new Date('2026-11-06T00:00:00+01:00').getTime();
 var ids=['d','h','m','s'].map(function(i){return document.getElementById(i)});
 var last=[];
@@ -262,11 +265,10 @@ function tick(){
 }
 var timer=setInterval(tick,1000);tick();
 
-/* 3. Past retreats gallery with like / unlike (saved in this browser) */
 var photos=[
-  {id:'p1',src:'a.png',alt:'Past retreat photo 1'},
-  {id:'p2',src:'b.png',alt:'Past retreat photo 2'},
-  {id:'p3',src:'c.png',alt:'Past retreat photo 3'}
+  {id:'p1',src:'images/a.png',alt:'Past retreat photo 1'},
+  {id:'p2',src:'images/b.png',alt:'Past retreat photo 2'},
+  {id:'p3',src:'images/c.png',alt:'Past retreat photo 3'}
 ];
 var voter;
 try{voter=localStorage.getItem('nylr_voter');if(!voter){voter=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2)+Date.now();localStorage.setItem('nylr_voter',voter)}}catch(e){voter='anon'+Math.random()}
@@ -294,17 +296,16 @@ fetch('/api/likes?voter='+encodeURIComponent(voter)).then(function(r){return r.j
   counts=d.counts||{};mine=d.mine||{};paints.forEach(function(f){f()});
 }).catch(function(){});
 
-/* 4. Scroll reveal */
 var io=new IntersectionObserver(function(es){
   es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
 },{threshold:.15});
 document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
 
-/* 5. Sticky register button: show once the hero button is out of view */
 var sticky=document.getElementById('sticky');
 new IntersectionObserver(function(es){
   sticky.classList.toggle('show',!es[0].isIntersecting);
 }).observe(document.getElementById('heroBtn'));
 </script>
 </body>
-</html>
+  </html>
+  
