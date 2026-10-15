@@ -35,7 +35,7 @@ h2{font-size:clamp(2rem,6vw,3rem);margin-bottom:1rem}
 @keyframes drift{to{transform:translateX(70px)}}
 .topbar{position:relative;display:flex;align-items:center;justify-content:flex-start;padding:0 1rem;margin-bottom:1.2rem;animation:rise .8s var(--ease) both}
 .brand{display:flex;align-items:center;gap:.7rem;text-align:left;text-decoration:none;font-weight:700;color:var(--brown);line-height:1.2;font-size:.95rem}
-.brand img{width:56px;height:56px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;box-shadow:0 4px 12px rgba(74,28,11,.25)}
+.brand img{width:56px;height:56px;object-fit:contain}
 .social{display:flex;gap:.5rem}
 .social a{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.85);color:var(--brown);box-shadow:0 4px 10px rgba(74,28,11,.15);transition:transform .25s var(--ease),background .25s,color .25s}
 .social a:hover{transform:translateY(-3px) scale(1.08);background:var(--brown);color:var(--gold-soft)}
@@ -267,7 +267,7 @@ var timer=setInterval(tick,1000);tick();
 
 var photos=[
   {id:'p1',src:'images/a.png',alt:'Past retreat photo 1'},
-  {id:'p2',src:'images/title1.png',alt:'Past retreat photo 2'},
+  {id:'p2',src:'images/b.png',alt:'Past retreat photo 2'},
   {id:'p3',src:'images/c.png',alt:'Past retreat photo 3'}
 ];
 var voter;
@@ -307,5 +307,4 @@ new IntersectionObserver(function(es){
 }).observe(document.getElementById('heroBtn'));
 </script>
 </body>
-  </html>
-  
+</html>
