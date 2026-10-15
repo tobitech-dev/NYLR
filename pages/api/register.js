@@ -3,7 +3,31 @@ import { db, api } from '../../lib/db';
 const LEVELS = ['Secondary school', 'Awaiting Admission', 'Undergraduate', 'Graduate'];
 const PHONE = /^[+]?[0-9 -]{7,18}$/;
 const DOB = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+const EMAIL = /^[^ @]+@[^ @]+[.][^ @]+$/;
 const t = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+
+async function addToBrevo(d) {
+  const key = process.env.BREVO_API_KEY;
+  const list = Number(process.env.BREVO_LIST_ID);
+  if (!key || !list) return false;
+  try {
+    const r = await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        email: d.email,
+        attributes: { FIRSTNAME: d.firstName, LASTNAME: d.surname },
+        listIds: [list],
+        updateEnabled: true,
+      }),
+    });
+    if (!r.ok) console.error('Brevo rejected contact:', r.status);
+    return r.ok;
+  } catch (e) {
+    console.error('Brevo error:', e);
+    return false;
+  }
+}
 
 export default api(async (req, res) => {
   if (req.method !== 'POST') {
@@ -12,8 +36,6 @@ export default api(async (req, res) => {
   }
 
   const b = req.body || {};
-
-  // Honeypot field for basic spam prevention.
   if (b.website) return res.status(200).json({ ok: true });
 
   const d = {
@@ -22,6 +44,7 @@ export default api(async (req, res) => {
     dob: t(b.dob, 10),
     gender: t(b.gender, 10),
     phone: t(b.phone, 20),
+    email: t(b.email, 120).toLowerCase(),
     province: t(b.province, 80),
     coordinatorName: t(b.coordinatorName, 100),
     coordinatorPhone: t(b.coordinatorPhone, 20),
@@ -32,9 +55,17 @@ export default api(async (req, res) => {
     health: t(b.health, 300),
   };
 
-  const required = ['firstName', 'surname', 'dob', 'gender', 'phone', 'province', 'coordinatorName', 'coordinatorPhone', 'parentName', 'parentPhone', 'academicLevel'];
+  const required = ['firstName', 'surname', 'dob', 'gender', 'phone', 'email', 'province', 'coordinatorName', 'coordinatorPhone', 'parentName', 'parentPhone', 'academicLevel'];
   if (required.some((k) => !d[k])) {
     return res.status(400).json({ error: 'Please fill in all required fields.' });
+  }
+
+  if (b.consent !== 'yes' && b.consent !== true) {
+    return res.status(400).json({ error: 'Please tick the box to receive event updates.' });
+  }
+
+  if (!EMAIL.test(d.email)) {
+    return res.status(400).json({ error: 'Enter a valid email address.' });
   }
 
   const birth = new Date(d.dob + 'T00:00:00Z');
@@ -57,6 +88,7 @@ export default api(async (req, res) => {
     return res.status(409).json({ error: 'You have already registered.' });
   }
 
-  await collection.insertOne({ ...d, key, createdAt: new Date() });
+  const brevo = await addToBrevo(d);
+  await collection.insertOne({ ...d, key, consent: true, brevo, createdAt: new Date() });
   return res.status(201).json({ ok: true, message: 'Registration successful.' });
 });
