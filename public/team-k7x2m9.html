@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Team</title>
+
 <style>
 *{box-sizing:border-box;margin:0}
 body{font-family:system-ui,sans-serif;background:#f6efe6;color:#2a1006;padding:1rem}
@@ -13,50 +16,389 @@ button{background:#4a1c0b;color:#fff;border:0;cursor:pointer}
 .bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1rem 0}
 .bar input,.bar select{flex:1 1 160px}
 .bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.7rem 1rem;border-radius:10px;font-weight:700}
+.bar .pdf{background:#4a1c0b;color:#fff}
 .wrap{overflow-x:auto;background:#fff;border-radius:12px}
 table{border-collapse:collapse;width:100%;font-size:.88rem}
 th,td{padding:.55rem .7rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
 th{background:#4a1c0b;color:#fff;position:sticky;top:0}
 td button{padding:.3rem .6rem;background:#c0392b}
 #msg{color:#c0392b;font-weight:700;margin-top:.5rem}
-</style></head>
+@media(max-width:480px){body{padding:.6rem}.bar{gap:.4rem}.bar a{text-align:center;flex:1}}
+</style>
+</head>
+
 <body>
-<div class="box" id="login"><h2>Team access</h2><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="in">Sign in</button><p id="msg"></p></div>
+
+<div class="box" id="login">
+<h2>Team access</h2>
+<input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+<button id="in">Sign in</button>
+<p id="msg"></p>
+</div>
+
 <div id="app" hidden>
 <h2>Registrations: <span id="count">0</span></h2>
-<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select>
-<a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a></div>
-<div class="wrap"><table id="t"></table></div></div>
+
+<div class="bar">
+<input id="q" placeholder="Search">
+
+<select id="prov">
+<option value="">All provinces</option>
+</select>
+
+<a href="/api/admin/data?format=csv">CSV</a>
+<a href="/api/admin/data?format=xls">Excel</a>
+<a href="#" class="pdf" id="pdf">Export PDF</a>
+</div>
+
+<div class="wrap">
+<table id="t"></table>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+
 <script>
-var rows=[],H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges'];
-var K=['createdAt','firstName','surname','dob','gender','phone','email','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health'];
+var rows=[];
+var H=[
+'Registered','First name','Surname','Date of birth','Gender',
+'Phone','Email','Province','Coordinator','Coordinator phone',
+'Parent name','Parent phone','Academic level','Allergies','Health challenges'
+];
+
+var K=[
+'createdAt','firstName','surname','dob','gender','phone','email',
+'province','coordinatorName','coordinatorPhone','parentName',
+'parentPhone','academicLevel','allergies','health'
+];
+
 var $=function(i){return document.getElementById(i)};
+
 function login(){
-  fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
-  .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error);})})
-  .then(load).catch(function(e){$('msg').textContent=e.message||'Error'});
+  fetch('/api/admin/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:$('pw').value})
+  })
+  .then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok)throw new Error(j.error);
+    });
+  })
+  .then(load)
+  .catch(function(e){
+    $('msg').textContent=e.message||'Error';
+  });
 }
+
 function load(){
-  fetch('/api/admin/data').then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
-    rows=d.rows;$('login').hidden=true;$('app').hidden=false;
-    var ps={};rows.forEach(function(r){if(r.province)ps[r.province]=1});
-    $('prov').length=1;Object.keys(ps).sort().forEach(function(p){var o=document.createElement('option');o.value=o.textContent=p;$('prov').appendChild(o)});
+  fetch('/api/admin/data')
+  .then(function(r){
+    if(!r.ok)throw new Error('Unable to load registrations');
+    return r.json();
+  })
+  .then(function(d){
+    rows=d.rows||[];
+    $('login').hidden=true;
+    $('app').hidden=false;
+
+    var ps={};
+
+    rows.forEach(function(r){
+      if(r.province)ps[r.province]=1;
+    });
+
+    $('prov').length=1;
+
+    Object.keys(ps).sort().forEach(function(p){
+      var o=document.createElement('option');
+      o.value=p;
+      o.textContent=p;
+      $('prov').appendChild(o);
+    });
+
     draw();
-  }).catch(function(){});
+  })
+  .catch(function(e){
+    $('msg').textContent=e.message||'Unable to load data';
+  });
 }
+
+function filteredRows(){
+  var q=$('q').value.toLowerCase();
+  var p=$('prov').value;
+
+  return rows.filter(function(r){
+    return (!p||r.province===p)&&
+      (!q||K.some(function(k){
+        return String(r[k]==null?'':r[k]).toLowerCase().indexOf(q)>-1;
+      }));
+  });
+}
+
 function draw(){
-  var q=$('q').value.toLowerCase(),p=$('prov').value;
-  var list=rows.filter(function(r){return(!p||r.province===p)&&(!q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1}))});
-  $('count').textContent=list.length+(list.length!==rows.length?' of '+rows.length:'');
-  var t=$('t');t.textContent='';
-  var tr=t.insertRow();H.concat(['']).forEach(function(h){var th=document.createElement('th');th.textContent=h;tr.appendChild(th)});
+  var list=filteredRows();
+
+  $('count').textContent=
+    list.length+(list.length!==rows.length?' of '+rows.length:'');
+
+  var t=$('t');
+  t.textContent='';
+
+  var tr=t.insertRow();
+
+  H.concat(['Action']).forEach(function(h){
+    var th=document.createElement('th');
+    th.textContent=h;
+    tr.appendChild(th);
+  });
+
   list.forEach(function(r){
-    var row=t.insertRow();K.forEach(function(k){row.insertCell().textContent=r[k]});
-    var b=document.createElement('button');b.textContent='Delete';
-    b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))fetch('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
+    var row=t.insertRow();
+
+    K.forEach(function(k){
+      row.insertCell().textContent=r[k]==null?'':r[k];
+    });
+
+    var b=document.createElement('button');
+    b.textContent='Delete';
+
+    b.onclick=function(){
+      if(confirm('Delete '+r.firstName+' '+r.surname+'?')){
+        fetch('/api/admin/data?id='+encodeURIComponent(r.id),{
+          method:'DELETE'
+        }).then(function(response){
+          if(!response.ok)throw new Error('Delete failed');
+          load();
+        }).catch(function(){
+          alert('Unable to delete this registration.');
+        });
+      }
+    };
+
     row.insertCell().appendChild(b);
   });
 }
-$('in').onclick=login;$('pw').onkeydown=function(e){if(e.key==='Enter')login()};
-$('q').oninput=draw;$('prov').onchange=draw;load();
-</script></body></html>
+
+function exportPDF(e){
+  e.preventDefault();
+
+  if(!window.jspdf||!window.jspdf.jsPDF){
+    alert('PDF library could not load. Check your internet connection and try again.');
+    return;
+  }
+
+  var list=filteredRows();
+
+  if(!list.length){
+    alert('There are no registrations to export.');
+    return;
+  }
+
+  var btn=$('pdf');
+  btn.textContent='Generating PDF...';
+  btn.style.pointerEvents='none';
+
+  try{
+    var jsPDF=window.jspdf.jsPDF;
+
+    // Landscape layout gives the registration table more space.
+    var doc=new jsPDF({
+      orientation:'landscape',
+      unit:'mm',
+      format:'a3'
+    });
+
+    var pageWidth=doc.internal.pageSize.getWidth();
+
+    var today=new Date().toLocaleDateString('en-GB',{
+      day:'2-digit',
+      month:'short',
+      year:'numeric'
+    });
+
+    // Professional report header.
+    doc.setFillColor(74,28,11);
+    doc.rect(0,0,pageWidth,35,'F');
+
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(22);
+    doc.text('TEAM REGISTRATION REPORT',14,15);
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.text('Official Registration Records',14,23);
+    doc.text('Generated: '+today,pageWidth-14,15,{align:'right'});
+
+    // Summary section.
+    doc.setTextColor(42,16,6);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.text('Registration Summary',14,46);
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.text('Total registrations in this report: '+list.length,14,53);
+
+    if($('prov').value){
+      doc.text('Province: '+$('prov').value,14,60);
+    }
+
+    if($('q').value.trim()){
+      doc.text('Search filter: '+$('q').value.trim(),14,$('prov').value?67:60);
+    }
+
+    // Prepare clean, printable table data.
+    var headers=[H];
+    var body=list.map(function(r){
+      return K.map(function(k){
+        var value=r[k];
+
+        if(value==null)return '';
+
+        if(k==='createdAt'&&value){
+          var date=new Date(value);
+          if(!isNaN(date.getTime())){
+            return date.toLocaleDateString('en-GB');
+          }
+        }
+
+        return String(value);
+      });
+    });
+
+    doc.autoTable({
+      head:headers,
+      body:body,
+      startY: $('q').value.trim()&&$('prov').value?72:
+              $('prov').value||$('q').value.trim()?65:59,
+
+      theme:'grid',
+
+      margin:{
+        top:15,
+        right:10,
+        bottom:18,
+        left:10
+      },
+
+      styles:{
+        font:'helvetica',
+        fontSize:7,
+        cellPadding:2.2,
+        overflow:'linebreak',
+        valign:'middle',
+        textColor:[42,16,6],
+        lineColor:[225,215,204],
+        lineWidth:0.15
+      },
+
+      headStyles:{
+        fillColor:[74,28,11],
+        textColor:[255,255,255],
+        fontStyle:'bold',
+        fontSize:7,
+        halign:'left'
+      },
+
+      alternateRowStyles:{
+        fillColor:[250,246,241]
+      },
+
+      columnStyles:{
+        0:{cellWidth:23},
+        1:{cellWidth:23},
+        2:{cellWidth:23},
+        3:{cellWidth:22},
+        4:{cellWidth:16},
+        5:{cellWidth:25},
+        6:{cellWidth:36},
+        7:{cellWidth:22},
+        8:{cellWidth:28},
+        9:{cellWidth:25},
+        10:{cellWidth:28},
+        11:{cellWidth:25},
+        12:{cellWidth:25},
+        13:{cellWidth:25},
+        14:{cellWidth:30}
+      },
+
+      showHead:'everyPage',
+
+      didDrawPage:function(data){
+        var pageHeight=doc.internal.pageSize.getHeight();
+
+        // Footer separator.
+        doc.setDrawColor(217,196,174);
+        doc.line(10,pageHeight-13,pageWidth-10,pageHeight-13);
+
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(8);
+        doc.setTextColor(110,95,83);
+
+        doc.text(
+          'Team Registration Report',
+          10,
+          pageHeight-7
+        );
+
+        doc.text(
+          'Page '+doc.internal.getNumberOfPages(),
+          pageWidth-10,
+          pageHeight-7,
+          {align:'right'}
+        );
+      }
+    });
+
+    // Replace the simple page count with "Page X of Y".
+    var totalPages=doc.internal.getNumberOfPages();
+
+    for(var i=1;i<=totalPages;i++){
+      doc.setPage(i);
+
+      var pageHeight=doc.internal.pageSize.getHeight();
+
+      doc.setFillColor(255,255,255);
+      doc.rect(pageWidth-45,pageHeight-11,35,7,'F');
+
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(110,95,83);
+
+      doc.text(
+        'Page '+i+' of '+totalPages,
+        pageWidth-10,
+        pageHeight-7,
+        {align:'right'}
+      );
+    }
+
+    doc.save('Team-Registrations-'+new Date().toISOString().slice(0,10)+'.pdf');
+
+  }catch(err){
+    console.error('PDF export error:',err);
+    alert('Unable to generate the PDF. Please try again.');
+  }finally{
+    btn.textContent='Export PDF';
+    btn.style.pointerEvents='';
+  }
+}
+
+$('in').onclick=login;
+
+$('pw').onkeydown=function(e){
+  if(e.key==='Enter')login();
+};
+
+$('q').oninput=draw;
+$('prov').onchange=draw;
+$('pdf').onclick=exportPDF;
+
+load();
+</script>
+
+</body>
+</html>
