@@ -9,7 +9,7 @@ const t = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 async function addToBrevo(d) {
   const key = process.env.BREVO_API_KEY;
   const list = Number(process.env.BREVO_LIST_ID);
-  if (!key || !list) return false;
+  if (!key) return false;
   try {
     const r = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
@@ -17,7 +17,7 @@ async function addToBrevo(d) {
       body: JSON.stringify({
         email: d.email,
         attributes: { FIRSTNAME: d.firstName, LASTNAME: d.surname },
-        listIds: [list],
+        ...(list ? { listIds: [list] } : {}),
         updateEnabled: true,
       }),
     });
@@ -62,6 +62,11 @@ export default api(async (req, res) => {
 
   if (b.consent !== 'yes' && b.consent !== true) {
     return res.status(400).json({ error: 'Please tick the box to receive event updates.' });
+  }
+
+  const num = Number(d.province);
+  if (!/^[0-9]{1,3}$/.test(d.province) || num < 1 || num > 100) {
+    return res.status(400).json({ error: 'Choose a province number from 1 to 100.' });
   }
 
   if (!EMAIL.test(d.email)) {
