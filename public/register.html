@@ -35,8 +35,8 @@ a{color:var(--clay);font-weight:700}
 </div>
 <script>
 
-var PROVINCES=[];
-var F=[['firstName','First name','text'],['surname','Surname','text'],['dob','Date of birth','date'],['gender','Gender','select',['Male','Female']],['phone','Phone number','tel'],['email','Email address','email'],['province','Select your province','province'],['coordinatorName','Name of Provincial Coordinator','text'],['coordinatorPhone','Phone number of Provincial Coordinator','tel'],['parentName',"Parent's name",'text'],['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],['parentPhone',"Parent's phone number",'tel'],['allergies','Any allergies? If yes, please share details','textarea'],['health','Any health challenges? If yes, please share details','textarea']];
+var PROVINCES=Array.from({length:100},function(_,i){return String(i+1)});
+var F=[['firstName','First name','text'],['surname','Surname','text'],['dob','Date of birth','date'],['gender','Gender','select',['Male','Female']],['phone','Phone number','tel'],['email','Email address','email'],['province','Select your province number','province'],['coordinatorName','Name of Provincial Coordinator','text'],['coordinatorPhone','Phone number of Provincial Coordinator','tel'],['parentName',"Parent's name",'text'],['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],['parentPhone',"Parent's phone number",'tel'],['allergies','Any allergies? If yes, please share details','textarea'],['health','Any health challenges? If yes, please share details','textarea']];
 var OPT={allergies:1,health:1},box=document.getElementById('fields');
 F.forEach(function(x){
   var l=document.createElement('label');l.htmlFor=x[0];l.textContent=x[1]+' ';
