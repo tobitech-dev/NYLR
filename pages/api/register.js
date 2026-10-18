@@ -4,6 +4,10 @@ const LEVELS = ['Secondary school', 'Awaiting Admission', 'Undergraduate', 'Grad
 const PHONE = /^[+]?[0-9 -]{7,18}$/;
 const DOB = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 const EMAIL = /^[^ @]+@[^ @]+[.][^ @]+$/;
+export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
+
+const FILE = /^data:(image[/](jpeg|png)|application[/]pdf);base64,[A-Za-z0-9+/=]+$/;
+const hits = global._regHits || (global._regHits = {});
 const t = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
 async function addToBrevo(d) {
@@ -37,6 +41,13 @@ export default api(async (req, res) => {
 
   const b = req.body || {};
   if (b.website) return res.status(200).json({ ok: true });
+
+  const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0] || 'x';
+  const now = Date.now();
+  const recent = (hits[ip] || []).filter((x) => now - x < 3600000);
+  if (recent.length >= 200) {
+    return res.status(429).json({ error: 'Too many registrations. Please try again later.' });
+  }
 
   const d = {
     firstName: t(b.firstName, 60),
@@ -86,6 +97,11 @@ export default api(async (req, res) => {
     return res.status(400).json({ error: 'Enter valid phone numbers.' });
   }
 
+  const receipt = String(b.receipt || '');
+  if (receipt.length > 2800000 || !FILE.test(receipt)) {
+    return res.status(400).json({ error: 'Upload your payment receipt (photo, screenshot or PDF under 2 MB).' });
+  }
+
   const collection = (await db()).collection('registrations');
 
   const key = [d.phone.replace(/[^0-9]/g, ''), d.surname.toLowerCase(), d.firstName.toLowerCase()].join('|');
@@ -94,6 +110,7 @@ export default api(async (req, res) => {
   }
 
   const brevo = await addToBrevo(d);
-  await collection.insertOne({ ...d, key, consent: true, brevo, createdAt: new Date() });
+  hits[ip] = recent.concat(now);
+  await collection.insertOne({ ...d, key, consent: true, brevo, receipt, hasReceipt: true, paid: false, createdAt: new Date() });
   return res.status(201).json({ ok: true, message: 'Registration successful.' });
 });
