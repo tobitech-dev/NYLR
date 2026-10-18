@@ -9,53 +9,128 @@
 *{box-sizing:border-box;margin:0}
 body{font-family:system-ui,sans-serif;background:#f6efe6;color:#2a1006;padding:1rem}
 .box{max-width:340px;margin:20vh auto;background:#fff;padding:1.5rem;border-radius:16px;box-shadow:0 10px 30px rgba(74,28,11,.2)}
-input,select,button{font:inherit;padding:.7rem .9rem;border-radius:10px;border:1.5px solid #d9c4ae}
+input,select,button{font:inherit;padding:.65rem .85rem;border-radius:10px;border:1.5px solid #d9c4ae}
 .box input{width:100%;margin:.8rem 0}
 button{background:#4a1c0b;color:#fff;border:0;cursor:pointer}
-.bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1rem 0}
-.bar input,.bar select{flex:1 1 160px}
-.bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.7rem 1rem;border-radius:10px;font-weight:700}
-.wrap{overflow-x:auto;background:#fff;border-radius:12px}
+button.alt{background:#e9a319;color:#2a1006;font-weight:700}
+button.danger{background:#c0392b;padding:.3rem .6rem}
+button.small{padding:.35rem .6rem;font-size:.85rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.tabs button{background:#fff;color:#4a1c0b;border:1.5px solid #4a1c0b}
+.tabs button.on{background:#4a1c0b;color:#fff}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.cards div{background:#fff;border-radius:12px;padding:.8rem;text-align:center}
+.cards b{display:block;font-size:1.6rem}
+.bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.8rem 0}
+.bar input,.bar select{flex:1 1 140px}
+.bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.65rem 1rem;border-radius:10px;font-weight:700}
+.wrap{overflow-x:auto;background:#fff;border-radius:12px;margin-bottom:1rem}
 table{border-collapse:collapse;width:100%;font-size:.88rem}
 th,td{padding:.55rem .7rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
-th{background:#4a1c0b;color:#fff;position:sticky;top:0}
-td button{padding:.3rem .6rem;background:#c0392b}
+th{background:#4a1c0b;color:#fff}
+td button{margin-right:.3rem}
+.st-verified{color:#1e8449;font-weight:700}
+.st-rejected{color:#c0392b;font-weight:700}
+.st-pending{color:#b9770e;font-weight:700}
 #msg{color:#c0392b;font-weight:700;margin-top:.5rem}
+h3{margin:1rem 0 .4rem}
 </style></head>
 <body>
 <div class="box" id="login"><h2>Team access</h2><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="in">Sign in</button><p id="msg"></p></div>
 <div id="app" hidden>
-<h2>Registrations: <span id="count">0</span></h2>
-<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select>
-<a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a><a href="#" id="pdf">PDF</a></div>
-<div class="wrap"><table id="t"></table></div></div>
+<div class="tabs"><button id="t1" class="on">Registrations</button><button id="t2">Provinces</button></div>
+<div id="regs">
+<div class="cards"><div><b id="cTotal">0</b>Registered</div><div><b id="cPaid">0</b>Paid</div><div><b id="cUnpaid">0</b>Unpaid</div></div>
+<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select><select id="st"><option value="">All</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select></div>
+<div class="bar"><button class="alt" id="markSel">Mark selected paid</button><button id="unmarkSel">Mark selected unpaid</button><button class="alt" id="markProv">Mark whole province paid</button></div>
+<div class="bar"><a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a><a href="#" id="pdf">PDF</a><span id="shownCount"></span></div>
+<div class="wrap"><table id="t"></table></div>
+</div>
+<div id="pays" hidden>
+<h3>By province</h3><div class="wrap"><table id="sum"></table></div>
+</div>
+</div>
 <script>
-var shown=[],rows=[],H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges'];
-var K=['createdAt','firstName','surname','dob','gender','phone','email','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health'];
+var rows=[],shown=[],sel={};
+var H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges','Paid','Payment note'];
+var K=['createdAt','firstName','surname','dob','gender','phone','email','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health','paid','paidRef'];
 var $=function(i){return document.getElementById(i)};
+function el(tag,text,cls){var e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
+function call(url,opt){return fetch(url,opt).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'Error');return j})})}
+function post(body){return call('/api/admin/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}
+function num(a,b){return Number(a)-Number(b)}
 function login(){
-  fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
-  .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error);})})
+  call('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
   .then(load).catch(function(e){$('msg').textContent=e.message||'Error'});
 }
 function load(){
-  fetch('/api/admin/data').then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){
-    rows=d.rows;$('login').hidden=true;$('app').hidden=false;
-    var ps={};rows.forEach(function(r){if(r.province)ps[r.province]=1});
-    $('prov').length=1;Object.keys(ps).sort(function(a,b){return Number(a)-Number(b)}).forEach(function(p){var o=document.createElement('option');o.value=o.textContent=p;$('prov').appendChild(o)});
-    draw();
+  return call('/api/admin/data').then(function(r){
+    rows=r.rows;
+    $('login').hidden=true;$('app').hidden=false;
+    var cur=$('prov').value,ps={};
+    rows.forEach(function(x){if(x.province)ps[x.province]=1});
+    $('prov').length=1;
+    Object.keys(ps).sort(num).forEach(function(p){var o=document.createElement('option');o.value=o.textContent=p;$('prov').appendChild(o)});
+    if(ps[cur])$('prov').value=cur;
+    drawRegs();drawPays();
   }).catch(function(){});
 }
-function draw(){
-  var q=$('q').value.toLowerCase(),p=$('prov').value;
-  var list=rows.filter(function(r){return(!p||r.province===p)&&(!q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1}))});
-  shown=list;$('count').textContent=list.length+(list.length!==rows.length?' of '+rows.length:'');
+function drawRegs(){
+  var q=$('q').value.toLowerCase(),p=$('prov').value,st=$('st').value;
+  var list=rows.filter(function(r){
+    if(p&&r.province!==p)return false;
+    if(st==='paid'&&r.paid!=='Yes')return false;
+    if(st==='unpaid'&&r.paid==='Yes')return false;
+    return !q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1});
+  });
+  shown=list;
+  var paid=rows.filter(function(r){return r.paid==='Yes'}).length;
+  $('cTotal').textContent=rows.length;$('cPaid').textContent=paid;$('cUnpaid').textContent=rows.length-paid;
+  $('shownCount').textContent='Showing '+list.length;
   var t=$('t');t.textContent='';
-  var tr=t.insertRow();H.concat(['']).forEach(function(h){var th=document.createElement('th');th.textContent=h;tr.appendChild(th)});
+  var hr=t.insertRow();
+  var all=document.createElement('input');all.type='checkbox';
+  all.onchange=function(){list.forEach(function(r){if(all.checked)sel[r.id]=true;else delete sel[r.id]});drawRegs()};
+  var th0=document.createElement('th');th0.appendChild(all);hr.appendChild(th0);
+  H.concat(['']).forEach(function(h){hr.appendChild(el('th',h))});
   list.forEach(function(r){
-    var row=t.insertRow();K.forEach(function(k){row.insertCell().textContent=r[k]});
-    var b=document.createElement('button');b.textContent='Delete';
-    b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))fetch('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
+    var row=t.insertRow();
+    var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!sel[r.id];
+    cb.onchange=function(){if(cb.checked)sel[r.id]=true;else delete sel[r.id]};
+    row.insertCell().appendChild(cb);
+    K.forEach(function(k){row.insertCell().textContent=r[k]});
+    var cell=row.insertCell();
+    if(r.hasReceipt){var v=el('button','Receipt','small');v.onclick=function(){window.open('/api/admin/receipt?id='+r.id,'_blank')};cell.appendChild(v)}
+    var b=el('button','Delete','danger');
+    b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))call('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
+    cell.appendChild(b);
+  });
+  all.checked=list.length>0&&list.every(function(r){return sel[r.id]});
+}
+function markProvince(p,def){
+  if(!confirm('Mark everyone unpaid in province '+p+' as paid?'))return;
+  var ref=prompt('Receipt or payment note (optional)',def||'');
+  if(ref===null)return;
+  post({action:'markProvince',province:p,paid:true,ref:ref}).then(function(r){alert(r.changed+' people marked as paid');load()}).catch(function(e){alert(e.message)});
+}
+function markSelected(paid){
+  var ids=Object.keys(sel);
+  if(!ids.length){alert('Tick at least one person first.');return}
+  var ref='';
+  if(paid){ref=prompt('Receipt or payment note (optional)','');if(ref===null)return}
+  post({action:'mark',ids:ids,paid:paid,ref:ref}).then(function(){sel={};load()}).catch(function(e){alert(e.message)});
+}
+function drawPays(){
+  var by={};
+  rows.forEach(function(r){var k=r.province||'?';var o=by[k]||(by[k]={reg:0,paid:0});o.reg++;if(r.paid==='Yes')o.paid++});
+  var s=$('sum');s.textContent='';
+  var hr=s.insertRow();
+  ['Province','Registered','Paid','Unpaid',''].forEach(function(h){hr.appendChild(el('th',h))});
+  Object.keys(by).sort(num).forEach(function(k){
+    var o=by[k],row=s.insertRow();
+    [k,o.reg,o.paid,o.reg-o.paid].forEach(function(v){row.insertCell().textContent=v});
+    var b=el('button','Mark all paid','small alt');
+    b.onclick=function(){markProvince(k,'')};
     row.insertCell().appendChild(b);
   });
 }
@@ -70,6 +145,18 @@ function pdf(e){
   doc.autoTable({startY:42,head:[H],body:shown.map(function(r){return K.map(function(k){return r[k]})}),styles:{fontSize:7,cellPadding:3},headStyles:{fillColor:[74,28,11]}});
   doc.save('nylr-registrations.pdf');
 }
-$('pdf').onclick=pdf;$('in').onclick=login;$('pw').onkeydown=function(e){if(e.key==='Enter')login()};
-$('q').oninput=draw;$('prov').onchange=draw;load();
+function tab(n){
+  $('regs').hidden=n!==1;$('pays').hidden=n!==2;
+  $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';
+}
+$('t1').onclick=function(){tab(1)};
+$('t2').onclick=function(){tab(2)};
+$('markSel').onclick=function(){markSelected(true)};
+$('unmarkSel').onclick=function(){markSelected(false)};
+$('markProv').onclick=function(){var p=$('prov').value;if(!p){alert('Choose a province number first.');return}markProvince(p,'')};
+$('pdf').onclick=pdf;
+$('in').onclick=login;
+$('pw').onkeydown=function(e){if(e.key==='Enter')login()};
+$('q').oninput=drawRegs;$('prov').onchange=drawRegs;$('st').onchange=drawRegs;
+load();
 </script></body></html>
