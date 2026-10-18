@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { db, api } from '../../../lib/db';
 import { valid } from '../../../lib/auth';
-const COLS = [['createdAt', 'Registered'], ['firstName', 'First name'], ['surname', 'Surname'], ['dob', 'Date of birth'], ['gender', 'Gender'], ['phone', 'Phone'], ['email', 'Email'], ['province', 'Province'], ['coordinatorName', 'Coordinator'], ['coordinatorPhone', 'Coordinator phone'], ['parentName', 'Parent name'], ['parentPhone', 'Parent phone'], ['academicLevel', 'Academic level'], ['allergies', 'Allergies'], ['health', 'Health challenges']];
-const val = (r, k) => (k === 'createdAt' ? new Date(r[k]).toISOString().slice(0, 16).replace('T', ' ') : String(r[k] == null ? '' : r[k]));
+const COLS = [['createdAt', 'Registered'], ['firstName', 'First name'], ['surname', 'Surname'], ['dob', 'Date of birth'], ['gender', 'Gender'], ['phone', 'Phone'], ['email', 'Email'], ['province', 'Province'], ['coordinatorName', 'Coordinator'], ['coordinatorPhone', 'Coordinator phone'], ['parentName', 'Parent name'], ['parentPhone', 'Parent phone'], ['academicLevel', 'Academic level'], ['allergies', 'Allergies'], ['health', 'Health challenges'], ['paid', 'Paid'], ['paidRef', 'Payment note']];
+const val = (r, k) => (k === 'createdAt' ? new Date(r[k]).toISOString().slice(0, 16).replace('T', ' ') : k === 'paid' ? (r.paid ? 'Yes' : 'No') : String(r[k] == null ? '' : r[k]));
 const guard = (s) => ('=+-@'.includes(s.charAt(0)) && s !== '' && !/^[+]?[0-9 ()-]+$/.test(s) ? "'" + s : s);
 const h = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export default api(async (req, res) => {
@@ -15,7 +15,7 @@ export default api(async (req, res) => {
     return res.json({ ok: true });
   }
   if (req.method !== 'GET') return res.status(405).end();
-  const rows = await c.find({}).sort({ createdAt: -1 }).toArray();
+  const rows = await c.find({}, { projection: { receipt: 0 } }).sort({ createdAt: -1 }).toArray();
   const f = req.query.format;
   if (f === 'csv') {
     const q = (s) => '"' + s.replace(/"/g, '""') + '"';
@@ -31,5 +31,5 @@ export default api(async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="nylr-registrations.xls"');
     return res.send(html);
   }
-  res.json({ rows: rows.map((r) => Object.assign({ id: String(r._id) }, ...COLS.map((x) => ({ [x[0]]: val(r, x[0]) })))) });
+  res.json({ rows: rows.map((r) => Object.assign({ id: String(r._id), hasReceipt: !!r.hasReceipt }, ...COLS.map((x) => ({ [x[0]]: val(r, x[0]) })))) });
 });
