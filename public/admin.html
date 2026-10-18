@@ -1,55 +1,149 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Team</title>
+<meta name="theme-color" content="#4a1c0b">
+<title>NYLR 2026 Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
+:root{--ink:#2a1006;--brown:#4a1c0b;--clay:#7a3414;--gold:#e9a319;--gold-soft:#ffd36b;--sky:#8cc9f5;--paper:#f7f1e8;--line:#eadfce;--green:#1e7a3c;--red:#c0392b;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Nunito Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--ease:cubic-bezier(.2,.8,.2,1)}
 *{box-sizing:border-box;margin:0}
-body{font-family:system-ui,sans-serif;background:#f6efe6;color:#2a1006;padding:1rem}
-.box{max-width:340px;margin:20vh auto;background:#fff;padding:1.5rem;border-radius:16px;box-shadow:0 10px 30px rgba(74,28,11,.2)}
-input,select,button{font:inherit;padding:.65rem .85rem;border-radius:10px;border:1.5px solid #d9c4ae}
-.box input{width:100%;margin:.8rem 0}
-button{background:#4a1c0b;color:#fff;border:0;cursor:pointer}
-button.alt{background:#e9a319;color:#2a1006;font-weight:700}
-button.danger{background:#c0392b;padding:.3rem .6rem}
-button.small{padding:.35rem .6rem;font-size:.85rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1rem}
-.tabs button{background:#fff;color:#4a1c0b;border:1.5px solid #4a1c0b}
-.tabs button.on{background:#4a1c0b;color:#fff}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
-.cards div{background:#fff;border-radius:12px;padding:.8rem;text-align:center}
-.cards b{display:block;font-size:1.6rem}
-.bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.8rem 0}
-.bar input,.bar select{flex:1 1 140px}
-.bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.65rem 1rem;border-radius:10px;font-weight:700}
-.wrap{overflow-x:auto;background:#fff;border-radius:12px;margin-bottom:1rem}
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-th,td{padding:.55rem .7rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
-th{background:#4a1c0b;color:#fff}
-td button{margin-right:.3rem}
-.st-verified{color:#1e8449;font-weight:700}
-.st-rejected{color:#c0392b;font-weight:700}
-.st-pending{color:#b9770e;font-weight:700}
-#msg{color:#c0392b;font-weight:700;margin-top:.5rem}
-h3{margin:1rem 0 .4rem}
+body{font-family:var(--sans);color:var(--ink);background:linear-gradient(180deg,#dcefff 0,var(--paper) 340px);min-height:100vh;padding:calc(1rem + env(safe-area-inset-top,0px)) 1rem calc(6rem + env(safe-area-inset-bottom,0px))}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:12px;padding:.7rem 1.1rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--clay),var(--brown));transition:transform .2s var(--ease),box-shadow .2s,opacity .2s}
+button:hover{box-shadow:0 8px 18px rgba(74,28,11,.25)}
+button:active{transform:scale(.96)}
+button.alt{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:var(--ink)}
+button.ghost{background:#fff;color:var(--brown);box-shadow:inset 0 0 0 1.5px var(--line)}
+button.danger{background:#fff;color:var(--red);box-shadow:inset 0 0 0 1.5px #f0c9c4}
+button.small{padding:.4rem .75rem;font-size:.85rem;border-radius:10px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.shell{max-width:1200px;margin:0 auto}
+
+#login{min-height:80vh;display:grid;place-items:center}
+.box{width:min(380px,100%);background:#fff;border-radius:26px;padding:2rem 1.6rem;box-shadow:0 30px 60px rgba(74,28,11,.22);text-align:center;animation:rise .7s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}}
+.lock{width:62px;height:62px;border-radius:50%;margin:0 auto 1rem;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold-soft),var(--gold));box-shadow:0 10px 22px rgba(233,163,25,.4)}
+.lock svg{width:28px;height:28px;stroke:var(--brown);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.box h2{font-family:var(--serif);font-size:2.1rem;color:var(--brown);line-height:1.1}
+.box p.sub{color:var(--clay);margin:.3rem 0 1.2rem}
+.box input{width:100%;padding:.9rem 1rem;border:2px solid var(--line);border-radius:14px;background:#fffdf8;margin-bottom:.9rem;transition:border-color .2s,box-shadow .2s}
+.box input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 4px rgba(233,163,25,.25)}
+.box button{width:100%;padding:.95rem}
+#msg{color:var(--red);font-weight:700;margin-top:.8rem;min-height:1.2em}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.2rem}
+.top h1{font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.6rem);color:var(--brown);line-height:1}
+.top p{color:var(--clay);font-weight:600}
+#refresh{width:46px;height:46px;padding:0;border-radius:50%;font-size:1.3rem;flex:none}
+.tabs{display:inline-flex;background:#fff;border-radius:999px;padding:.3rem;box-shadow:0 8px 22px rgba(74,28,11,.12);margin-bottom:1.2rem}
+.tabs button{background:none;color:var(--clay);padding:.6rem 1.3rem;border-radius:999px;box-shadow:none}
+.tabs button.on{background:var(--brown);color:var(--gold-soft)}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.2rem}
+.card{background:#fff;border-radius:20px;padding:1rem 1rem 1.1rem;box-shadow:0 10px 26px rgba(74,28,11,.1);border-top:5px solid var(--sky);animation:rise .6s var(--ease) both}
+.card:nth-child(2){border-top-color:var(--green);animation-delay:.07s}
+.card:nth-child(3){border-top-color:var(--gold);animation-delay:.14s}
+.card b{display:block;font-family:var(--serif);font-size:clamp(2rem,8vw,3rem);line-height:1;color:var(--brown)}
+.card span{font-weight:700;color:var(--clay);font-size:.9rem}
+.prog{height:7px;border-radius:99px;background:#e8f4ea;margin-top:.6rem;overflow:hidden}
+.prog i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#48b868,var(--green));transition:width .8s var(--ease)}
+.card small{display:block;margin-top:.3rem;color:var(--green);font-weight:700}
+
+.panel{background:#fff;border-radius:20px;padding:1rem;box-shadow:0 10px 26px rgba(74,28,11,.1);margin-bottom:1.2rem}
+.tools{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.tools input,.tools select{padding:.7rem .9rem;border:2px solid var(--line);border-radius:12px;background:#fffdf8;flex:1 1 150px;min-width:0}
+.tools input:focus,.tools select:focus{outline:0;border-color:var(--gold)}
+.exports{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--line)}
+.exports a{text-decoration:none;font-weight:700;color:var(--brown);background:#fff7e6;box-shadow:inset 0 0 0 1.5px var(--gold);padding:.5rem 1rem;border-radius:999px;transition:transform .2s var(--ease),background .2s}
+.exports a:hover{transform:translateY(-2px);background:var(--gold-soft)}
+#shownCount{margin-left:auto;color:var(--clay);font-weight:700}
+
+.wrap{background:#fff;border-radius:20px;box-shadow:0 10px 26px rgba(74,28,11,.1);overflow:auto;max-height:68vh}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:.9rem}
+th,td{padding:.7rem .85rem;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;z-index:2;background:var(--brown);color:var(--gold-soft);font-weight:700}
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;background:#fff}
+th:first-child{z-index:3;background:var(--brown)}
+tbody tr{transition:background .15s}
+tbody tr:nth-child(even) td{background:#fdf9f2}
+tbody tr:nth-child(even) td:first-child{background:#fdf9f2}
+tbody tr:hover td{background:#fff3d6}
+tr.sel-row td{background:#ffe9b0!important}
+td.empty{text-align:center;padding:2.5rem;color:var(--clay);font-weight:700;white-space:normal}
+input[type=checkbox]{width:19px;height:19px;accent-color:var(--brown);cursor:pointer}
+.badge{display:inline-block;padding:.2rem .7rem;border-radius:999px;font-weight:700;font-size:.8rem}
+.badge.paid{background:#e3f6e8;color:var(--green)}
+.badge.unpaid{background:#fdf0d5;color:#9a6200}
+.chip{display:inline-block;min-width:2rem;text-align:center;padding:.15rem .55rem;border-radius:9px;background:#efe3d3;color:var(--brown);font-weight:700}
+td .small{margin-right:.35rem}
+.mini{width:120px;height:8px;border-radius:99px;background:#f0e6d6;overflow:hidden}
+.mini i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#48b868,var(--green))}
+
+.selbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160%);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;justify-content:center;width:min(640px,calc(100% - 1.5rem));background:var(--brown);color:#fff;padding:.7rem .9rem;border-radius:20px;box-shadow:0 20px 40px rgba(42,16,6,.4);z-index:20;transition:transform .45s var(--ease)}
+.selbar.on{transform:translate(-50%,0)}
+.selbar span{font-weight:700;color:var(--gold-soft);margin-right:auto}
+.selbar button{padding:.55rem 1rem}
+
+@media(max-width:560px){
+  .cards{gap:.5rem}
+  .card{padding:.8rem .6rem}
+  .tabs{display:flex}
+  .tabs button{flex:1;padding:.6rem .5rem}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style></head>
 <body>
-<div class="box" id="login"><h2>Team access</h2><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="in">Sign in</button><p id="msg"></p></div>
+<div class="shell">
+<div id="login">
+<div class="box">
+<div class="lock"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+<h2>Team access</h2>
+<p class="sub">NYLR 2026 dashboard</p>
+<input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+<button class="alt" id="in">Sign in</button>
+<p id="msg"></p>
+</div>
+</div>
+
 <div id="app" hidden>
+<div class="top">
+<div><h1>NYLR 2026</h1><p>Team dashboard | Vessels Unto Honour</p></div>
+<button id="refresh" title="Refresh" aria-label="Refresh">&#8635;</button>
+</div>
 <div class="tabs"><button id="t1" class="on">Registrations</button><button id="t2">Provinces</button></div>
+
 <div id="regs">
-<div class="cards"><div><b id="cTotal">0</b>Registered</div><div><b id="cPaid">0</b>Paid</div><div><b id="cUnpaid">0</b>Unpaid</div></div>
-<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select><select id="st"><option value="">All</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select></div>
-<div class="bar"><button class="alt" id="markSel">Mark selected paid</button><button id="unmarkSel">Mark selected unpaid</button><button class="alt" id="markProv">Mark whole province paid</button></div>
-<div class="bar"><a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a><a href="#" id="pdf">PDF</a><span id="shownCount"></span></div>
+<div class="cards">
+<div class="card"><b id="cTotal">0</b><span>Registered</span></div>
+<div class="card"><b id="cPaid">0</b><span>Paid</span><div class="prog"><i id="pbar"></i></div><small id="pPct">0% paid</small></div>
+<div class="card"><b id="cUnpaid">0</b><span>Unpaid</span></div>
+</div>
+<div class="panel">
+<div class="tools">
+<input id="q" placeholder="Search name, phone, email" type="search">
+<select id="prov"><option value="">All provinces</option></select>
+<select id="st"><option value="">All payments</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select>
+<button class="alt" id="markProv">Mark whole province paid</button>
+</div>
+<div class="exports">
+<a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a><a href="#" id="pdf">PDF</a>
+<span id="shownCount"></span>
+</div>
+</div>
 <div class="wrap"><table id="t"></table></div>
 </div>
+
 <div id="pays" hidden>
-<h3>By province</h3><div class="wrap"><table id="sum"></table></div>
+<div class="wrap"><table id="sum"></table></div>
 </div>
 </div>
+</div>
+
+<div class="selbar" id="selbar"><span id="selCount">0 selected</span><button class="alt" id="markSel">Mark paid</button><button class="ghost" id="unmarkSel">Mark unpaid</button><button class="ghost" id="clearSel">Clear</button></div>
+
 <script>
 var rows=[],shown=[],sel={};
 var H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges','Paid','Payment note'];
@@ -75,6 +169,11 @@ function load(){
     drawRegs();drawPays();
   }).catch(function(){});
 }
+function updSel(){
+  var n=Object.keys(sel).length;
+  $('selCount').textContent=n+' selected';
+  $('selbar').className=n?'selbar on':'selbar';
+}
 function drawRegs(){
   var q=$('q').value.toLowerCase(),p=$('prov').value,st=$('st').value;
   var list=rows.filter(function(r){
@@ -84,28 +183,41 @@ function drawRegs(){
     return !q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1});
   });
   shown=list;
-  var paid=rows.filter(function(r){return r.paid==='Yes'}).length;
-  $('cTotal').textContent=rows.length;$('cPaid').textContent=paid;$('cUnpaid').textContent=rows.length-paid;
-  $('shownCount').textContent='Showing '+list.length;
+  var paid=rows.filter(function(r){return r.paid==='Yes'}).length,total=rows.length;
+  var pct=total?Math.round(paid*100/total):0;
+  $('cTotal').textContent=total;$('cPaid').textContent=paid;$('cUnpaid').textContent=total-paid;
+  $('pbar').style.width=pct+'%';$('pPct').textContent=pct+'% paid';
+  $('shownCount').textContent=list.length+' shown';
   var t=$('t');t.textContent='';
   var hr=t.insertRow();
-  var all=document.createElement('input');all.type='checkbox';
+  var all=document.createElement('input');all.type='checkbox';all.setAttribute('aria-label','Select all shown');
   all.onchange=function(){list.forEach(function(r){if(all.checked)sel[r.id]=true;else delete sel[r.id]});drawRegs()};
   var th0=document.createElement('th');th0.appendChild(all);hr.appendChild(th0);
   H.concat(['']).forEach(function(h){hr.appendChild(el('th',h))});
   list.forEach(function(r){
     var row=t.insertRow();
+    if(sel[r.id])row.className='sel-row';
     var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!sel[r.id];
-    cb.onchange=function(){if(cb.checked)sel[r.id]=true;else delete sel[r.id]};
+    cb.onchange=function(){
+      if(cb.checked){sel[r.id]=true;row.className='sel-row'}else{delete sel[r.id];row.className=''}
+      updSel();
+    };
     row.insertCell().appendChild(cb);
-    K.forEach(function(k){row.insertCell().textContent=r[k]});
+    K.forEach(function(k){
+      var c=row.insertCell();
+      if(k==='paid'){c.appendChild(el('span',r.paid==='Yes'?'Paid':'Unpaid','badge '+(r.paid==='Yes'?'paid':'unpaid')))}
+      else if(k==='province'){c.appendChild(el('span',r[k],'chip'))}
+      else{c.textContent=r[k]}
+    });
     var cell=row.insertCell();
-    if(r.hasReceipt){var v=el('button','Receipt','small');v.onclick=function(){window.open('/api/admin/receipt?id='+r.id,'_blank')};cell.appendChild(v)}
-    var b=el('button','Delete','danger');
+    if(r.hasReceipt){var v=el('button','Receipt','small ghost');v.onclick=function(){window.open('/api/admin/receipt?id='+r.id,'_blank')};cell.appendChild(v)}
+    var b=el('button','Delete','small danger');
     b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))call('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
     cell.appendChild(b);
   });
+  if(!list.length){var er=t.insertRow(),ec=er.insertCell();ec.colSpan=H.length+2;ec.className='empty';ec.textContent='No registrations match.'}
   all.checked=list.length>0&&list.every(function(r){return sel[r.id]});
+  updSel();
 }
 function markProvince(p,def){
   if(!confirm('Mark everyone unpaid in province '+p+' as paid?'))return;
@@ -125,14 +237,18 @@ function drawPays(){
   rows.forEach(function(r){var k=r.province||'?';var o=by[k]||(by[k]={reg:0,paid:0});o.reg++;if(r.paid==='Yes')o.paid++});
   var s=$('sum');s.textContent='';
   var hr=s.insertRow();
-  ['Province','Registered','Paid','Unpaid',''].forEach(function(h){hr.appendChild(el('th',h))});
+  ['Province','Registered','Paid','Unpaid','Progress',''].forEach(function(h){hr.appendChild(el('th',h))});
   Object.keys(by).sort(num).forEach(function(k){
     var o=by[k],row=s.insertRow();
-    [k,o.reg,o.paid,o.reg-o.paid].forEach(function(v){row.insertCell().textContent=v});
+    row.insertCell().appendChild(el('span',k,'chip'));
+    [o.reg,o.paid,o.reg-o.paid].forEach(function(v){row.insertCell().textContent=v});
+    var pc=row.insertCell(),m=el('div',null,'mini'),i=document.createElement('i');
+    i.style.width=Math.round(o.paid*100/o.reg)+'%';m.appendChild(i);pc.appendChild(m);
     var b=el('button','Mark all paid','small alt');
     b.onclick=function(){markProvince(k,'')};
     row.insertCell().appendChild(b);
   });
+  if(!Object.keys(by).length){var er=s.insertRow(),ec=er.insertCell();ec.colSpan=6;ec.className='empty';ec.textContent='No registrations yet.'}
 }
 function pdf(e){
   e.preventDefault();
@@ -153,7 +269,9 @@ $('t1').onclick=function(){tab(1)};
 $('t2').onclick=function(){tab(2)};
 $('markSel').onclick=function(){markSelected(true)};
 $('unmarkSel').onclick=function(){markSelected(false)};
+$('clearSel').onclick=function(){sel={};drawRegs()};
 $('markProv').onclick=function(){var p=$('prov').value;if(!p){alert('Choose a province number first.');return}markProvince(p,'')};
+$('refresh').onclick=function(){load()};
 $('pdf').onclick=pdf;
 $('in').onclick=login;
 $('pw').onkeydown=function(e){if(e.key==='Enter')login()};
