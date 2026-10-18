@@ -21,6 +21,13 @@ button:active{transform:scale(.97)}button:disabled{opacity:.6}
 .err{color:#c0392b;font-weight:700;margin-top:1rem;min-height:1.2em}
 .ok{text-align:center;padding:2rem 0}.ok h2{font-size:2.3rem}.ok p{margin:.8rem 0 1.2rem}
 a{color:var(--clay);font-weight:700}
+.bank{background:#fff7e6;border:2px solid var(--gold);border-radius:16px;padding:1rem;margin:1rem 0}
+.bank h3{font-family:var(--serif);color:var(--brown);font-size:1.4rem;margin-bottom:.3rem}
+.bank p{font-size:.95rem;margin-bottom:.4rem}
+.row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.5rem 0;border-top:1px solid #f0dfc0}
+.row small{display:block;color:var(--clay);font-weight:600}
+.row b{font-size:1.1rem;word-break:break-all}
+.row button{width:auto;margin:0;padding:.5rem 1rem;font-size:.9rem;flex:none}
 </style></head>
 <body><div class="card">
 <div id="top">
@@ -28,13 +35,19 @@ a{color:var(--clay);font-weight:700}
 <h1 style="margin-top:1rem">Register for NYLR 2026</h1>
 <p class="sub">Vessels Unto Honour | 6th to 8th November</p>
 </div>
+<div id="bank" class="bank"></div>
 <form id="f" novalidate><input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><div id="fields"></div>
+<label for="receipt">Payment receipt (photo, screenshot or PDF) <i>*</i></label>
+<input id="receipt" type="file" accept="image/*,application/pdf">
 <label class="chk"><input type="checkbox" id="consent" name="consent" value="yes"><span>I agree to receive updates about NYLR 2026 by email. <i>*</i></span></label>
 <p class="err" id="err" role="alert"></p><button id="go" type="submit">Submit registration</button></form>
-<div class="ok" id="ok" hidden><h2>You're registered</h2><p>Thank you. We look forward to seeing you at the retreat.</p><a href="/">Back to home</a></div>
+<div class="ok" id="ok" hidden><h2>You're registered</h2><p>Thank you. Your receipt will be verified by the accountant. We look forward to seeing you at the retreat.</p>
+<button id="wa" type="button" hidden>Also send receipt on WhatsApp</button>
+<p style="margin-top:1.2rem"><a href="/">Back to home</a></p></div>
 </div>
 <script>
-
+var PAY={bank:'',accountName:'',accountNumber:'',amount:''};
+var CONTACT={whatsapp:''};
 var PROVINCES=Array.from({length:100},function(_,i){return String(i+1)});
 var F=[['firstName','First name','text'],['surname','Surname','text'],['dob','Date of birth','date'],['gender','Gender','select',['Male','Female']],['phone','Phone number','tel'],['email','Email address','email'],['province','Select your province number','province'],['coordinatorName','Name of Provincial Coordinator','text'],['coordinatorPhone','Phone number of Provincial Coordinator','tel'],['parentName',"Parent's name",'text'],['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],['parentPhone',"Parent's phone number",'tel'],['allergies','Any allergies? If yes, please share details','textarea'],['health','Any health challenges? If yes, please share details','textarea']];
 var OPT={allergies:1,health:1},box=document.getElementById('fields');
@@ -48,43 +61,102 @@ F.forEach(function(x){
   else{el=document.createElement('input');el.type=x[2]==='province'?'text':x[2];if(x[2]==='tel'){el.inputMode='tel';el.autocomplete='tel'}if(x[2]==='date')el.max=new Date().toISOString().slice(0,10)}
   el.id=el.name=x[0];box.appendChild(l);box.appendChild(el);
 });
-var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go');
-f.addEventListener('submit', async function (e) {
+
+function copy(text,btn){
+  var old=btn.textContent;
+  function done(){btn.textContent='Copied';setTimeout(function(){btn.textContent=old},1500)}
+  function fallback(){
+    var a=document.createElement('textarea');a.value=text;a.style.position='fixed';a.style.opacity='0';
+    document.body.appendChild(a);a.select();
+    try{document.execCommand('copy');done()}catch(e){}
+    document.body.removeChild(a);
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback)}else{fallback()}
+}
+var bank=document.getElementById('bank');
+var prow=[['Bank',PAY.bank],['Account name',PAY.accountName],['Account number',PAY.accountNumber],['Amount per person',PAY.amount]].filter(function(r){return r[1]});
+if(!prow.length){
+  bank.hidden=true;
+}else{
+  var h=document.createElement('h3');h.textContent='Pay first, then register';bank.appendChild(h);
+  var t=document.createElement('p');t.textContent='Transfer to this account, then upload your receipt at the bottom of the form.';bank.appendChild(t);
+  prow.forEach(function(r){
+    var d=document.createElement('div');d.className='row';
+    var left=document.createElement('div');
+    var s=document.createElement('small');s.textContent=r[0];
+    var b=document.createElement('b');b.textContent=r[1];
+    left.appendChild(s);left.appendChild(b);d.appendChild(left);
+    if(r[0]!=='Amount per person'){
+      var c=document.createElement('button');c.type='button';c.textContent='Copy';
+      c.onclick=function(){copy(r[1],c)};d.appendChild(c);
+    }
+    bank.appendChild(d);
+  });
+}
+
+function toData(file){
+  return new Promise(function(resolve,reject){
+    if(file.type==='application/pdf'){
+      if(file.size>1800000){reject(new Error('The PDF is too big. Use a photo or screenshot instead.'));return}
+      var r=new FileReader();
+      r.onload=function(){resolve(r.result)};
+      r.onerror=function(){reject(new Error('Could not read the file.'))};
+      r.readAsDataURL(file);
+      return;
+    }
+    if(file.type.indexOf('image/')!==0){reject(new Error('Upload a photo, screenshot or PDF of the receipt.'));return}
+    var url=URL.createObjectURL(file),img=new Image();
+    img.onload=function(){
+      var k=Math.min(1,1400/Math.max(img.width,img.height)),c=document.createElement('canvas');
+      c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+      var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',0.72));
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('Could not read that image. Try a screenshot.'))};
+    img.src=url;
+  });
+}
+
+var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go'),lastFile=null,lastMsg='';
+f.addEventListener('submit',async function(e){
   e.preventDefault();
-  err.textContent = '';
-  var data = {};
-  new FormData(f).forEach(function (v, k) { data[k] = String(v).trim(); });
-  var miss = F.filter(function (x) { return !OPT[x[0]] && !data[x[0]]; });
-  if (miss.length) {
-    err.textContent = 'Please fill in: ' + miss[0][1];
+  err.textContent='';
+  var data={};
+  new FormData(f).forEach(function(v,k){data[k]=String(v).trim()});
+  var miss=F.filter(function(x){return !OPT[x[0]]&&!data[x[0]]});
+  if(miss.length){
+    err.textContent='Please fill in: '+miss[0][1];
     document.getElementById(miss[0][0]).focus();
     return;
   }
-  if (!data.consent) {
-    err.textContent = 'Please tick the box to receive event updates.';
+  var file=document.getElementById('receipt').files[0];
+  if(!file){err.textContent='Please upload your payment receipt. It is compulsory.';return}
+  if(!data.consent){err.textContent='Please tick the box to receive event updates.';return}
+  go.disabled=true;go.textContent='Submitting...';
+  try{
+    data.receipt=await toData(file);
+    var res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var out={};
+    try{out=await res.json()}catch(x){}
+    if(!res.ok||!out.ok){throw new Error(out.error||'The server had a problem (code '+res.status+'). Please try again.')}
+    lastFile=file;
+    lastMsg='NYLR 2026 registration and payment. Name: '+data.firstName+' '+data.surname+'. Province '+data.province+'. Phone: '+data.phone+'.';
+    f.hidden=true;
+    document.getElementById('top').hidden=true;
+    document.getElementById('bank').hidden=true;
+    document.getElementById('ok').hidden=false;
+    if(CONTACT.whatsapp)document.getElementById('wa').hidden=false;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(error){
+    err.textContent=(error instanceof TypeError)?'Network error. Please check your internet connection.':error.message;
+    go.disabled=false;go.textContent='Submit registration';
+  }
+});
+document.getElementById('wa').addEventListener('click',function(){
+  if(lastFile&&navigator.canShare&&navigator.canShare({files:[lastFile]})){
+    navigator.share({files:[lastFile],text:lastMsg}).catch(function(){});
     return;
   }
-  go.disabled = true;
-  go.textContent = 'Submitting...';
-  try {
-    var response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    var result = {};
-    try { result = await response.json(); } catch (x) {}
-    if (!response.ok || !result.ok) {
-      throw new Error(result.error || 'The server had a problem (code ' + response.status + '). Please try again.');
-    }
-    f.hidden = true;
-    document.getElementById('top').hidden = true;
-    document.getElementById('ok').hidden = false;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch (error) {
-    err.textContent = (error instanceof TypeError) ? 'Network error. Please check your internet connection.' : error.message;
-    go.disabled = false;
-    go.textContent = 'Submit registration';
-  }
+  window.open('https://wa.me/'+CONTACT.whatsapp.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(lastMsg),'_blank');
 });
 </script></body></html>
