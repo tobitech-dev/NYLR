@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Register | NYLR 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,25 +30,39 @@ a{color:var(--clay);font-weight:700}
 .row small{display:block;color:var(--clay);font-weight:600}
 .row b{font-size:1.1rem;word-break:break-all}
 .row button{width:auto;margin:0;padding:.5rem 1rem;font-size:.9rem;flex:none}
-</style></head>
-<body><div class="card">
+</style>
+</head>
+<body>
+<div class="card">
 <div id="top">
 <a href="/">Back to home</a>
 <h1 style="margin-top:1rem">Register for NYLR 2026</h1>
 <p class="sub">Vessels Unto Honour | 6th to 8th November</p>
 </div>
 <div id="bank" class="bank"></div>
-<form id="f" novalidate><input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><div id="fields"></div>
+<form id="f" novalidate>
+<input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+<div id="fields"></div>
 <label for="receipt">Payment receipt (photo, screenshot or PDF) <i>*</i></label>
 <input id="receipt" type="file" accept="image/*,application/pdf">
 <label class="chk"><input type="checkbox" id="consent" name="consent" value="yes"><span>I agree to receive updates about NYLR 2026 by email. <i>*</i></span></label>
-<p class="err" id="err" role="alert"></p><button id="go" type="submit">Submit registration</button></form>
-<div class="ok" id="ok" hidden><h2>You're registered</h2><p>Thank you. Your receipt will be verified by the accountant. We look forward to seeing you at the retreat.</p>
+<p class="err" id="err" role="alert"></p>
+<button id="go" type="submit">Submit registration</button>
+</form>
+<div class="ok" id="ok" hidden>
+<h2>You're registered</h2>
+<p>Thank you. Your receipt will be verified by the accountant. We look forward to seeing you at the retreat.</p>
 <button id="wa" type="button" hidden>Also send receipt on WhatsApp</button>
-<p style="margin-top:1.2rem"><a href="/">Back to home</a></p></div>
+<p style="margin-top:1.2rem"><a href="/">Back to home</a></p>
+</div>
 </div>
 <script>
-var PAY={Firstbank:'',OlukemiSalau:'',3051689361:'',amount:''};
+var PAY={
+  bank:'FirstBank',
+  accountName:'Olukemi Salau',
+  accountNumber:'3051689361',
+  amount:''
+};
 var CONTACT={whatsapp:''};
 var PROVINCES=Array.from({length:100},function(_,i){return String(i+1)});
 var F=[['firstName','First name','text'],['surname','Surname','text'],['dob','Date of birth','date'],['gender','Gender','select',['Male','Female']],['phone','Phone number','tel'],['email','Email address','email'],['province','Select your province number','province'],['coordinatorName','Name of Provincial Coordinator','text'],['coordinatorPhone','Phone number of Provincial Coordinator','tel'],['parentName',"Parent's name",'text'],['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],['parentPhone',"Parent's phone number",'tel'],['allergies','Any allergies? If yes, please share details','textarea'],['health','Any health challenges? If yes, please share details','textarea']];
@@ -61,7 +77,6 @@ F.forEach(function(x){
   else{el=document.createElement('input');el.type=x[2]==='province'?'text':x[2];if(x[2]==='tel'){el.inputMode='tel';el.autocomplete='tel'}if(x[2]==='date')el.max=new Date().toISOString().slice(0,10)}
   el.id=el.name=x[0];box.appendChild(l);box.appendChild(el);
 });
-
 function copy(text,btn){
   var old=btn.textContent;
   function done(){btn.textContent='Copied';setTimeout(function(){btn.textContent=old},1500)}
@@ -93,7 +108,6 @@ if(!prow.length){
     bank.appendChild(d);
   });
 }
-
 function toData(file){
   return new Promise(function(resolve,reject){
     if(file.type==='application/pdf'){
@@ -116,7 +130,6 @@ function toData(file){
     img.src=url;
   });
 }
-
 var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go'),lastFile=null,lastMsg='';
 f.addEventListener('submit',async function(e){
   e.preventDefault();
@@ -159,4 +172,6 @@ document.getElementById('wa').addEventListener('click',function(){
   }
   window.open('https://wa.me/'+CONTACT.whatsapp.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(lastMsg),'_blank');
 });
-</script></body></html>
+</script>
+</body>
+  </html>
