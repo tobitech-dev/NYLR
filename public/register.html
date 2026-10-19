@@ -82,7 +82,7 @@ var PAY={
 
 var CONTACT={whatsapp:''};
 
-var PROVINCES=Array.from({length:100},function(_,i){return String(i+1)});
+var PROVINCES=['Region HQ','LP 33','LP 55','LP 62','LP 98','LP 99','LP 107'];
 
 var F=[
 ['firstName','First name','text'],
@@ -91,7 +91,7 @@ var F=[
 ['gender','Gender','select',['Male','Female']],
 ['phone','Phone number','tel'],
 ['email','Email address','email'],
-['province','Select your province number','province'],
+['province','Select your Assembly','province'],
 ['coordinatorName','Name of Provincial Coordinator','text'],
 ['coordinatorPhone','Phone number of Provincial Coordinator','tel'],
 ['parentName',"Parent's name",'text'],
@@ -393,4 +393,4 @@ document.getElementById('wa').addEventListener('click',function(){
 });
 </script>
 </body>
-  </html>
+</html>
