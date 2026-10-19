@@ -1,162 +1,1576 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Team</title>
+<meta name="theme-color" content="#17120f">
+<title>NYLR 2026 | Admin Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 <style>
-*{box-sizing:border-box;margin:0}
-body{font-family:system-ui,sans-serif;background:#f6efe6;color:#2a1006;padding:1rem}
-.box{max-width:340px;margin:20vh auto;background:#fff;padding:1.5rem;border-radius:16px;box-shadow:0 10px 30px rgba(74,28,11,.2)}
-input,select,button{font:inherit;padding:.65rem .85rem;border-radius:10px;border:1.5px solid #d9c4ae}
-.box input{width:100%;margin:.8rem 0}
-button{background:#4a1c0b;color:#fff;border:0;cursor:pointer}
-button.alt{background:#e9a319;color:#2a1006;font-weight:700}
-button.danger{background:#c0392b;padding:.3rem .6rem}
-button.small{padding:.35rem .6rem;font-size:.85rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1rem}
-.tabs button{background:#fff;color:#4a1c0b;border:1.5px solid #4a1c0b}
-.tabs button.on{background:#4a1c0b;color:#fff}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
-.cards div{background:#fff;border-radius:12px;padding:.8rem;text-align:center}
-.cards b{display:block;font-size:1.6rem}
-.bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.8rem 0}
-.bar input,.bar select{flex:1 1 140px}
-.bar a{background:#e9a319;color:#2a1006;text-decoration:none;padding:.65rem 1rem;border-radius:10px;font-weight:700}
-.wrap{overflow-x:auto;background:#fff;border-radius:12px;margin-bottom:1rem}
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-th,td{padding:.55rem .7rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
-th{background:#4a1c0b;color:#fff}
-td button{margin-right:.3rem}
-.st-verified{color:#1e8449;font-weight:700}
-.st-rejected{color:#c0392b;font-weight:700}
-.st-pending{color:#b9770e;font-weight:700}
-#msg{color:#c0392b;font-weight:700;margin-top:.5rem}
-h3{margin:1rem 0 .4rem}
-</style></head>
-<body>
-<div class="box" id="login"><h2>Team access</h2><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button id="in">Sign in</button><p id="msg"></p></div>
-<div id="app" hidden>
-<div class="tabs"><button id="t1" class="on">Registrations</button><button id="t2">Provinces</button></div>
-<div id="regs">
-<div class="cards"><div><b id="cTotal">0</b>Registered</div><div><b id="cPaid">0</b>Paid</div><div><b id="cUnpaid">0</b>Unpaid</div></div>
-<div class="bar"><input id="q" placeholder="Search"><select id="prov"><option value="">All provinces</option></select><select id="st"><option value="">All</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select></div>
-<div class="bar"><button class="alt" id="markSel">Mark selected paid</button><button id="unmarkSel">Mark selected unpaid</button><button class="alt" id="markProv">Mark whole province paid</button></div>
-<div class="bar"><a href="/api/admin/data?format=csv">CSV</a><a href="/api/admin/data?format=xls">Excel</a><a href="#" id="pdf">PDF</a><span id="shownCount"></span></div>
-<div class="wrap"><table id="t"></table></div>
-</div>
-<div id="pays" hidden>
-<h3>By province</h3><div class="wrap"><table id="sum"></table></div>
-</div>
-</div>
-<script>
-var rows=[],shown=[],sel={};
-var H=['Registered','First name','Surname','Date of birth','Gender','Phone','Email','Province','Coordinator','Coordinator phone','Parent name','Parent phone','Academic level','Allergies','Health challenges','Paid','Payment note'];
-var K=['createdAt','firstName','surname','dob','gender','phone','email','province','coordinatorName','coordinatorPhone','parentName','parentPhone','academicLevel','allergies','health','paid','paidRef'];
-var $=function(i){return document.getElementById(i)};
-function el(tag,text,cls){var e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
-function call(url,opt){return fetch(url,opt).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'Error');return j})})}
-function post(body){return call('/api/admin/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}
-function num(a,b){return Number(a)-Number(b)}
-function login(){
-  call('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('pw').value})})
-  .then(load).catch(function(e){$('msg').textContent=e.message||'Error'});
+:root{
+  --bg:#f5f5f7;
+  --surface:#fff;
+  --surface-2:#faf8f6;
+  --ink:#211711;
+  --muted:#81776f;
+  --primary:#4a1c0b;
+  --primary-dark:#2c1007;
+  --gold:#e9a319;
+  --gold-soft:#fff4d8;
+  --border:#eee6df;
+  --green:#16845b;
+  --green-soft:#e8f7ef;
+  --red:#c0392b;
+  --red-soft:#fff0ee;
+  --orange:#a66a05;
+  --orange-soft:#fff5dc;
+  --shadow:0 10px 35px rgba(37,21,12,.06);
+  --radius:18px;
 }
+
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.5;
+}
+
+button,input,select{font:inherit}
+button{
+  border:0;
+  cursor:pointer;
+  transition:transform .15s,background .15s,box-shadow .15s;
+}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.55;cursor:not-allowed}
+a{color:inherit}
+
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{
+  outline:3px solid rgba(233,163,25,.5);
+  outline-offset:2px;
+}
+
+input,select{
+  width:100%;
+  min-width:0;
+  padding:11px 13px;
+  background:#fff;
+  color:var(--ink);
+  border:1px solid #e5ddd6;
+  border-radius:11px;
+  outline:none;
+}
+
+input:focus,select:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(233,163,25,.12);
+}
+
+::placeholder{color:#a69a91}
+
+.login-page{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:22px;
+  background:
+    radial-gradient(ellipse at top left,rgba(233,163,25,.16),transparent 40%),
+    radial-gradient(ellipse at bottom right,rgba(74,28,11,.18),transparent 45%),
+    #f8f4ef;
+}
+
+.login-card{
+  width:100%;
+  max-width:420px;
+  padding:36px;
+  background:var(--surface);
+  border:1px solid rgba(74,28,11,.08);
+  border-radius:24px;
+  box-shadow:0 25px 80px rgba(49,24,11,.13);
+}
+
+.brand-mark{
+  width:55px;
+  height:55px;
+  display:grid;
+  place-items:center;
+  background:var(--primary);
+  color:var(--gold);
+  font-size:25px;
+  font-weight:900;
+  border-radius:17px;
+  margin-bottom:25px;
+}
+
+.login-card h1{
+  font-size:27px;
+  letter-spacing:-.8px;
+  line-height:1.2;
+}
+
+.login-card .subtitle{
+  margin-top:9px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.login-card label{
+  display:block;
+  margin:24px 0 8px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.login-card input{min-height:48px}
+
+.login-btn{
+  width:100%;
+  padding:13px;
+  margin-top:15px;
+  background:var(--primary);
+  color:white;
+  border-radius:12px;
+  font-weight:800;
+}
+
+.login-btn:hover{background:var(--primary-dark)}
+
+.login-footer{
+  margin-top:22px;
+  color:var(--muted);
+  text-align:center;
+  font-size:11px;
+}
+
+#msg{
+  margin-top:12px;
+  color:var(--red);
+  font-weight:700;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+
+.app-shell{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:245px minmax(0,1fr);
+}
+
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:24px 17px;
+  color:#fff;
+  background:linear-gradient(180deg,#321307,#1d0d07);
+}
+
+.side-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 8px 27px;
+  border-bottom:1px solid rgba(255,255,255,.11);
+}
+
+.side-logo{
+  flex-shrink:0;
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  background:var(--gold);
+  color:#291206;
+  border-radius:13px;
+  font-size:19px;
+  font-weight:900;
+}
+
+.side-brand strong{
+  display:block;
+  font-size:15px;
+  letter-spacing:-.3px;
+}
+
+.side-brand small{
+  display:block;
+  margin-top:2px;
+  color:#d2b8a8;
+  font-size:10px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+
+.nav-label{
+  padding:25px 11px 10px;
+  color:#bd9e8c;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+}
+
+.nav-btn{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  padding:12px 13px;
+  margin-bottom:6px;
+  color:#dfc9bc;
+  background:transparent;
+  text-align:left;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.nav-icon{
+  width:24px;
+  text-align:center;
+  font-size:17px;
+}
+
+.nav-btn:hover{
+  background:rgba(255,255,255,.07);
+  color:white;
+}
+
+.nav-btn.on{
+  background:var(--gold);
+  color:#2a1407;
+  box-shadow:0 5px 18px rgba(233,163,25,.15);
+}
+
+.side-bottom{
+  margin-top:auto;
+  padding:15px 10px 0;
+  border-top:1px solid rgba(255,255,255,.1);
+  color:#d2b8a8;
+  font-size:11px;
+  line-height:1.8;
+}
+
+.side-bottom strong{
+  display:block;
+  color:#fff;
+  font-size:12px;
+}
+
+.main-area{
+  min-width:0;
+  padding:29px 32px 40px;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:30px;
+}
+
+.page-heading h1{
+  font-size:27px;
+  line-height:1.2;
+  letter-spacing:-.9px;
+}
+
+.page-heading p{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.top-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.admin-chip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 13px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:13px;
+}
+
+.admin-avatar{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  background:var(--gold-soft);
+  color:var(--primary);
+  border-radius:10px;
+  font-weight:900;
+}
+
+.admin-chip strong{display:block;font-size:12px}
+.admin-chip small{display:block;color:var(--muted);font-size:10px}
+
+.panel{
+  min-width:0;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.panel-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  padding:20px 22px;
+  border-bottom:1px solid var(--border);
+}
+
+.panel-heading h2{font-size:16px;letter-spacing:-.3px}
+.panel-heading p{color:var(--muted);margin-top:3px;font-size:12px}
+.panel-body{padding:20px 22px}
+
+.section-intro{margin-bottom:21px}
+.section-intro h2{font-size:20px;letter-spacing:-.5px}
+.section-intro p{margin-top:5px;color:var(--muted);font-size:13px}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
+  margin-bottom:24px;
+}
+
+.stat-card{
+  position:relative;
+  overflow:hidden;
+  padding:23px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:17px;
+  box-shadow:var(--shadow);
+}
+
+.stat-card::after{
+  content:"";
+  position:absolute;
+  right:-27px;
+  top:-32px;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:var(--stat-tint,#fff4d8);
+  opacity:.8;
+}
+
+.stat-top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.stat-icon{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  background:var(--stat-tint,#fff4d8);
+  color:var(--stat-color,var(--primary));
+  font-size:17px;
+}
+
+.stat-card b{
+  position:relative;
+  z-index:1;
+  display:block;
+  margin-top:14px;
+  font-size:32px;
+  line-height:1;
+  letter-spacing:-1px;
+}
+
+.stat-note{
+  position:relative;
+  z-index:1;
+  margin-top:9px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:13px;
+}
+
+.search-box{
+  position:relative;
+  flex:1 1 230px;
+  min-width:150px;
+}
+
+.search-box input{padding-left:39px;min-height:43px}
+
+.search-icon{
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#9a8c81;
+  pointer-events:none;
+  font-size:16px;
+}
+
+.toolbar select{
+  flex:0 1 180px;
+  min-height:43px;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:40px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:750;
+  font-size:12px;
+  text-decoration:none;
+  white-space:nowrap;
+}
+
+.btn:hover{background:var(--primary-dark)}
+.btn-gold{background:var(--gold);color:#2a1407}
+.btn-gold:hover{background:#d9950d}
+.btn-light{background:#fff;color:var(--primary);border:1px solid #e6d9ce}
+.btn-light:hover{background:var(--surface-2)}
+.btn-danger{background:var(--red-soft);color:var(--red)}
+.btn-danger:hover{background:#ffe1dd}
+.btn-small{min-height:30px;padding:6px 9px;font-size:11px;border-radius:8px}
+
+.btn-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin:15px 0;
+}
+
+.export-bar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:16px 0 12px;
+}
+
+.export-actions{display:flex;flex-wrap:wrap;gap:8px}
+.result-count{color:var(--muted);font-size:12px;font-weight:700}
+
+.table-panel{overflow:hidden}
+.table-scroll{overflow:auto;max-width:100%}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:12px;
+}
+
+th,td{
+  padding:13px 14px;
+  border-bottom:1px solid #f0ebe6;
+  text-align:left;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+
+th{
+  background:#faf7f4;
+  color:#6c5141;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.45px;
+  text-transform:uppercase;
+}
+
+td{color:#44362d}
+tbody tr{background:#fff}
+tbody tr:hover{background:#fffcf8}
+tbody tr:last-child td{border-bottom:0}
+
+td input[type="checkbox"],th input[type="checkbox"]{
+  width:16px;
+  height:16px;
+  accent-color:var(--primary);
+  cursor:pointer;
+}
+
+td button{margin:2px}
+td:first-child,th:first-child{padding-left:18px}
+
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  border-radius:30px;
+  font-size:10px;
+  font-weight:850;
+}
+
+.status::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+}
+
+.st-verified,.status-paid{color:var(--green);background:var(--green-soft)}
+.st-rejected{color:var(--red);background:var(--red-soft)}
+.st-pending,.status-unpaid{color:var(--orange);background:var(--orange-soft)}
+
+.empty-state{
+  padding:35px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.empty-state strong{
+  display:block;
+  color:var(--ink);
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:23px;
+}
+
+.summary-card{
+  padding:19px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:15px;
+}
+
+.summary-card span{color:var(--muted);font-size:12px}
+.summary-card b{display:block;margin-top:7px;font-size:26px;letter-spacing:-.6px}
+.summary-card small{display:block;margin-top:5px;color:var(--muted);font-size:11px}
+
+.progress{
+  width:100%;
+  height:7px;
+  margin-top:12px;
+  overflow:hidden;
+  background:#f1e9e1;
+  border-radius:20px;
+}
+
+.progress div{
+  height:100%;
+  width:0;
+  background:var(--green);
+  border-radius:20px;
+  transition:width .25s;
+}
+
+.assembly-name{font-weight:850;color:var(--primary)}
+
+@media(min-width:1500px){
+  .main-area{padding:36px 45px}
+  .cards{gap:22px}
+  .stat-card{padding:27px}
+}
+
+@media(max-width:1050px){
+  .app-shell{grid-template-columns:205px minmax(0,1fr)}
+  .main-area{padding:24px 20px 35px}
+  .cards{gap:11px}
+  .stat-card{padding:18px}
+  .stat-card b{font-size:28px}
+  .summary-grid{gap:10px}
+}
+
+@media(max-width:760px){
+  .app-shell{display:block}
+  .sidebar{position:static;height:auto;padding:13px 15px}
+  .side-brand{padding:3px 2px 13px;border-bottom:0}
+  .side-logo{width:38px;height:38px}
+  .side-brand strong{font-size:14px}
+  .side-brand small{font-size:9px}
+  .nav-label,.side-bottom{display:none}
+  .sidebar nav{display:flex;gap:8px;overflow-x:auto;padding-top:8px}
+  .nav-btn{width:auto;flex:0 0 auto;margin:0;padding:10px 12px;font-size:11px}
+  .nav-icon{font-size:15px;width:auto}
+  .main-area{padding:22px 15px 30px}
+  .topbar{align-items:flex-start;margin-bottom:23px}
+  .page-heading h1{font-size:23px}
+  .page-heading p{font-size:12px}
+  .admin-chip{padding:6px}
+  .admin-chip>div:last-child{display:none}
+  .admin-avatar{width:33px;height:33px}
+  .cards{gap:9px}
+  .stat-card{padding:14px 12px;border-radius:14px}
+  .stat-top{align-items:flex-start;flex-direction:column-reverse;gap:7px;font-size:10px}
+  .stat-icon{width:29px;height:29px;font-size:14px}
+  .stat-card b{font-size:24px;margin-top:10px}
+  .stat-note{font-size:10px}
+  .panel-heading{padding:16px}
+  .panel-body{padding:15px}
+  .toolbar{gap:8px}
+  .search-box{flex-basis:100%}
+  .toolbar select{flex:1 1 125px}
+  .btn-row .btn{flex:1 1 auto}
+  .export-bar{align-items:flex-start;flex-direction:column}
+  .summary-grid{grid-template-columns:1fr}
+  th,td{padding:11px 12px}
+  .login-card{padding:27px 23px}
+}
+
+@media(max-width:380px){
+  .main-area{padding-left:10px;padding-right:10px}
+  .cards{gap:6px}
+  .stat-card{padding:12px 9px}
+  .stat-card b{font-size:21px}
+  .stat-top{font-size:9px}
+  .nav-btn{padding:9px}
+}
+
+@media print{
+  .sidebar,.top-right,.toolbar,.btn-row,.export-bar,.nav-btn,.btn{display:none!important}
+  .app-shell{display:block}
+  .main-area{padding:0}
+  body{background:#fff}
+  .panel,.stat-card{box-shadow:none}
+  .table-scroll{overflow:visible}
+  table{font-size:8px}
+}
+</style>
+</head>
+
+<body>
+<div class="login-page" id="login">
+  <div class="login-card">
+    <div class="brand-mark">N</div>
+    <h1>Team Dashboard</h1>
+    <p class="subtitle">NYLR 2026 · Administrative access</p>
+
+    <form id="loginForm">
+      <label for="pw">Admin password</label>
+      <input id="pw" type="password" placeholder="Enter your admin password" autocomplete="current-password" required>
+      <button class="login-btn" id="in" type="submit">Sign in to dashboard →</button>
+    </form>
+
+    <p id="msg" role="alert" aria-live="polite"></p>
+    <p class="login-footer">Vessels Unto Honour · 6–8 November 2026</p>
+  </div>
+</div>
+
+<div class="app-shell" id="app" hidden>
+  <aside class="sidebar">
+    <div class="side-brand">
+      <div class="side-logo">N</div>
+      <div>
+        <strong>NYLR 2026</strong>
+        <small>Admin workspace</small>
+      </div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+
+    <nav>
+      <button id="t1" class="nav-btn on" type="button">
+        <span class="nav-icon">▦</span>
+        Registrations
+      </button>
+      <button id="t2" class="nav-btn" type="button">
+        <span class="nav-icon">⌂</span>
+        Assemblies
+      </button>
+    </nav>
+
+    <div class="side-bottom">
+      <strong>NYLR 2026</strong>
+      Vessels Unto Honour<br>
+      6–8 November 2026
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div class="page-heading">
+        <h1 id="pageTitle">Registrations</h1>
+        <p id="pageSubtitle">Manage attendees, payments and registration records.</p>
+      </div>
+
+      <div class="top-right">
+        <div class="admin-chip">
+          <div class="admin-avatar">A</div>
+          <div>
+            <strong>Administrator</strong>
+            <small>NYLR 2026</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="regs">
+      <div class="cards">
+        <div class="stat-card" style="--stat-tint:#fff2d5;--stat-color:#94600b">
+          <div class="stat-top">Total registrations<span class="stat-icon">♙</span></div>
+          <b id="cTotal">0</b>
+          <div class="stat-note">All registered attendees</div>
+        </div>
+
+        <div class="stat-card" style="--stat-tint:#e4f7ed;--stat-color:#16845b">
+          <div class="stat-top">Payments recorded<span class="stat-icon">✓</span></div>
+          <b id="cPaid">0</b>
+          <div class="stat-note">Attendees marked as paid</div>
+        </div>
+
+        <div class="stat-card" style="--stat-tint:#fff0ee;--stat-color:#c0392b">
+          <div class="stat-top">Payments outstanding<span class="stat-icon">◷</span></div>
+          <b id="cUnpaid">0</b>
+          <div class="stat-note">Attendees not yet marked paid</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Registration records</h2>
+            <p>Search attendees, review receipts and update payment status.</p>
+          </div>
+          <button class="btn btn-light" id="refresh" type="button">↻ Refresh data</button>
+        </div>
+
+        <div class="panel-body">
+          <div class="toolbar">
+            <div class="search-box">
+              <span class="search-icon">⌕</span>
+              <input id="q" type="search" placeholder="Search name, phone, email, assembly..." aria-label="Search registrations">
+            </div>
+
+            <select id="prov" aria-label="Filter by assembly">
+              <option value="">All assemblies</option>
+            </select>
+
+            <select id="st" aria-label="Filter by payment status">
+              <option value="">All payment statuses</option>
+              <option value="paid">Paid</option>
+              <option value="unpaid">Unpaid</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-gold" id="markSel" type="button">✓ Mark selected paid</button>
+            <button class="btn btn-light" id="unmarkSel" type="button">Mark selected unpaid</button>
+            <button class="btn" id="markProv" type="button">Mark assembly paid</button>
+          </div>
+
+          <div class="export-bar">
+            <div class="export-actions">
+              <a class="btn btn-light" href="/api/admin/data?format=csv">↓ CSV</a>
+              <a class="btn btn-light" href="/api/admin/data?format=xls">↓ Excel</a>
+              <button class="btn btn-light" id="pdf" type="button">↓ Export PDF</button>
+            </div>
+            <span class="result-count" id="shownCount">Showing 0 records</span>
+          </div>
+
+          <div class="table-panel">
+            <div class="table-scroll">
+              <table id="t"><tbody></tbody></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pays" hidden>
+      <div class="section-intro">
+        <h2>Assembly overview</h2>
+        <p>Review registrations and payment progress for each assembly.</p>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span>Total assemblies represented</span>
+          <b id="assemblyCount">0</b>
+          <small>Assemblies with registrations</small>
+        </div>
+
+        <div class="summary-card">
+          <span>Total registered attendees</span>
+          <b id="assemblyRegistrations">0</b>
+          <small>Across all assemblies</small>
+        </div>
+
+        <div class="summary-card">
+          <span>Overall payment completion</span>
+          <b id="paymentRate">0%</b>
+          <div class="progress"><div id="paymentProgress"></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Assembly payment summary</h2>
+            <p>Mark all unpaid attendees in a selected assembly as paid.</p>
+          </div>
+          <button class="btn btn-light" id="refresh2" type="button">↻ Refresh data</button>
+        </div>
+
+        <div class="table-scroll">
+          <table id="sum"><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+var rows = [];
+var shown = [];
+var sel = {};
+
+var ASSEMBLIES = [
+  'Region HQ',
+  'LP 33',
+  'LP 55',
+  'LP 62',
+  'LP 98',
+  'LP 99',
+  'LP 107'
+];
+
+var H = [
+  'Registered',
+  'First name',
+  'Surname',
+  'Date of birth',
+  'Gender',
+  'Phone',
+  'Email',
+  'Assembly',
+  'Coordinator',
+  'Coordinator phone',
+  'Parent name',
+  'Parent phone',
+  'Academic level',
+  'Allergies',
+  'Health challenges',
+  'Payment status',
+  'Payment note'
+];
+
+var K = [
+  'createdAt',
+  'firstName',
+  'surname',
+  'dob',
+  'gender',
+  'phone',
+  'email',
+  'province',
+  'coordinatorName',
+  'coordinatorPhone',
+  'parentName',
+  'parentPhone',
+  'academicLevel',
+  'allergies',
+  'health',
+  'paid',
+  'paidRef'
+];
+
+var $ = function(i){
+  return document.getElementById(i);
+};
+
+function el(tag,text,cls){
+  var e = document.createElement(tag);
+
+  if(text !== null && text !== undefined){
+    e.textContent = text;
+  }
+
+  if(cls){
+    e.className = cls;
+  }
+
+  return e;
+}
+
+function call(url,opt){
+  return fetch(url,opt).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){
+        throw new Error(j.error || 'Request failed');
+      }
+      return j;
+    });
+  });
+}
+
+function post(body){
+  return call('/api/admin/pay',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+}
+
+function assemblyOrder(value){
+  var index = ASSEMBLIES.indexOf(String(value));
+  return index === -1 ? 999 : index;
+}
+
+function compareAssemblies(a,b){
+  var ia = assemblyOrder(a);
+  var ib = assemblyOrder(b);
+
+  if(ia !== ib){
+    return ia - ib;
+  }
+
+  return String(a).localeCompare(String(b),undefined,{
+    numeric:true,
+    sensitivity:'base'
+  });
+}
+
+function formatDate(value){
+  if(!value){
+    return '';
+  }
+
+  var d = new Date(value);
+
+  if(Number.isNaN(d.getTime())){
+    return String(value);
+  }
+
+  return d.toLocaleDateString();
+}
+
+function login(){
+  $('msg').textContent = '';
+  $('in').disabled = true;
+  $('in').textContent = 'Signing in...';
+
+  call('/api/admin/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:$('pw').value})
+  })
+  .then(function(){
+    return load();
+  })
+  .catch(function(e){
+    $('msg').textContent = e.message || 'Unable to sign in. Please try again.';
+  })
+  .finally(function(){
+    $('in').disabled = false;
+    $('in').textContent = 'Sign in to dashboard →';
+  });
+}
+
 function load(){
   return call('/api/admin/data').then(function(r){
-    rows=r.rows;
-    $('login').hidden=true;$('app').hidden=false;
-    var cur=$('prov').value,ps={};
-    rows.forEach(function(x){if(x.province)ps[x.province]=1});
-    $('prov').length=1;
-    Object.keys(ps).sort(num).forEach(function(p){var o=document.createElement('option');o.value=o.textContent=p;$('prov').appendChild(o)});
-    if(ps[cur])$('prov').value=cur;
-    drawRegs();drawPays();
-  }).catch(function(){});
+    if(!Array.isArray(r.rows)){
+      throw new Error('The server returned an unexpected registration format.');
+    }
+
+    rows = r.rows;
+
+    $('login').hidden = true;
+    $('app').hidden = false;
+
+    var current = $('prov').value;
+    var available = {};
+
+    ASSEMBLIES.forEach(function(name){
+      available[name] = true;
+    });
+
+    rows.forEach(function(x){
+      if(x.province){
+        available[String(x.province)] = true;
+      }
+    });
+
+    var select = $('prov');
+    select.textContent = '';
+
+    var allOption = document.createElement('option');
+    allOption.value = '';
+    allOption.textContent = 'All assemblies';
+    select.appendChild(allOption);
+
+    Object.keys(available).sort(compareAssemblies).forEach(function(name){
+      var option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+
+    if(available[current]){
+      select.value = current;
+    }
+
+    var existingIds = {};
+
+    rows.forEach(function(r){
+      existingIds[String(r.id)] = true;
+    });
+
+    Object.keys(sel).forEach(function(id){
+      if(!existingIds[id]){
+        delete sel[id];
+      }
+    });
+
+    drawRegs();
+    drawPays();
+  }).catch(function(e){
+    if(!$('app').hidden){
+      alert('Unable to refresh registration data: ' + e.message);
+    }else{
+      $('msg').textContent = 'Unable to load the dashboard. Please sign in again or refresh.';
+    }
+
+    throw e;
+  });
 }
+
 function drawRegs(){
-  var q=$('q').value.toLowerCase(),p=$('prov').value,st=$('st').value;
-  var list=rows.filter(function(r){
-    if(p&&r.province!==p)return false;
-    if(st==='paid'&&r.paid!=='Yes')return false;
-    if(st==='unpaid'&&r.paid==='Yes')return false;
-    return !q||K.some(function(k){return String(r[k]).toLowerCase().indexOf(q)>-1});
+  var q = $('q').value.toLowerCase().trim();
+  var p = $('prov').value;
+  var st = $('st').value;
+
+  var list = rows.filter(function(r){
+    if(p && String(r.province || '') !== p){
+      return false;
+    }
+
+    if(st === 'paid' && r.paid !== 'Yes'){
+      return false;
+    }
+
+    if(st === 'unpaid' && r.paid === 'Yes'){
+      return false;
+    }
+
+    if(!q){
+      return true;
+    }
+
+    return K.some(function(k){
+      return String(r[k] == null ? '' : r[k]).toLowerCase().indexOf(q) > -1;
+    });
   });
-  shown=list;
-  var paid=rows.filter(function(r){return r.paid==='Yes'}).length;
-  $('cTotal').textContent=rows.length;$('cPaid').textContent=paid;$('cUnpaid').textContent=rows.length-paid;
-  $('shownCount').textContent='Showing '+list.length;
-  var t=$('t');t.textContent='';
-  var hr=t.insertRow();
-  var all=document.createElement('input');all.type='checkbox';
-  all.onchange=function(){list.forEach(function(r){if(all.checked)sel[r.id]=true;else delete sel[r.id]});drawRegs()};
-  var th0=document.createElement('th');th0.appendChild(all);hr.appendChild(th0);
-  H.concat(['']).forEach(function(h){hr.appendChild(el('th',h))});
+
+  shown = list;
+
+  var paidCount = rows.filter(function(r){
+    return r.paid === 'Yes';
+  }).length;
+
+  $('cTotal').textContent = rows.length;
+  $('cPaid').textContent = paidCount;
+  $('cUnpaid').textContent = rows.length - paidCount;
+  $('shownCount').textContent = 'Showing ' + list.length + ' of ' + rows.length + ' registrations';
+
+  var t = $('t');
+  t.textContent = '';
+
+  var thead = document.createElement('thead');
+  var tbody = document.createElement('tbody');
+  var headerRow = document.createElement('tr');
+
+  var checkHead = document.createElement('th');
+  var all = document.createElement('input');
+
+  all.type = 'checkbox';
+  all.setAttribute('aria-label','Select all visible registrations');
+
+  all.onchange = function(){
+    list.forEach(function(r){
+      var id = String(r.id);
+
+      if(all.checked){
+        sel[id] = true;
+      }else{
+        delete sel[id];
+      }
+    });
+
+    drawRegs();
+  };
+
+  checkHead.appendChild(all);
+  headerRow.appendChild(checkHead);
+
+  H.concat(['Actions']).forEach(function(h){
+    headerRow.appendChild(el('th',h));
+  });
+
+  thead.appendChild(headerRow);
+  t.appendChild(thead);
+
   list.forEach(function(r){
-    var row=t.insertRow();
-    var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!sel[r.id];
-    cb.onchange=function(){if(cb.checked)sel[r.id]=true;else delete sel[r.id]};
-    row.insertCell().appendChild(cb);
-    K.forEach(function(k){row.insertCell().textContent=r[k]});
-    var cell=row.insertCell();
-    if(r.hasReceipt){var v=el('button','Receipt','small');v.onclick=function(){window.open('/api/admin/receipt?id='+r.id,'_blank')};cell.appendChild(v)}
-    var b=el('button','Delete','danger');
-    b.onclick=function(){if(confirm('Delete '+r.firstName+' '+r.surname+'?'))call('/api/admin/data?id='+r.id,{method:'DELETE'}).then(load)};
-    cell.appendChild(b);
+    var row = document.createElement('tr');
+
+    var checkCell = row.insertCell();
+    var cb = document.createElement('input');
+
+    cb.type = 'checkbox';
+    cb.checked = !!sel[String(r.id)];
+    cb.setAttribute('aria-label','Select ' + (r.firstName || '') + ' ' + (r.surname || ''));
+
+    cb.onchange = function(){
+      var id = String(r.id);
+
+      if(cb.checked){
+        sel[id] = true;
+      }else{
+        delete sel[id];
+      }
+
+      updateSelectAll(all,list);
+    };
+
+    checkCell.appendChild(cb);
+
+    K.forEach(function(k){
+      var cell = row.insertCell();
+      var value = r[k];
+
+      if(k === 'createdAt'){
+        cell.textContent = formatDate(value);
+      }else if(k === 'paid'){
+        var isPaid = value === 'Yes';
+        cell.appendChild(el(
+          'span',
+          isPaid ? 'Paid' : 'Unpaid',
+          'status ' + (isPaid ? 'status-paid' : 'status-unpaid')
+        ));
+      }else{
+        cell.textContent = value == null ? '' : String(value);
+      }
+    });
+
+    var actions = row.insertCell();
+
+    if(r.hasReceipt){
+      var receipt = el('button','Receipt','btn btn-light btn-small');
+      receipt.type = 'button';
+
+      receipt.onclick = function(){
+        window.open(
+          '/api/admin/receipt?id=' + encodeURIComponent(r.id),
+          '_blank',
+          'noopener'
+        );
+      };
+
+      actions.appendChild(receipt);
+    }
+
+    var del = el('button','Delete','btn btn-danger btn-small');
+    del.type = 'button';
+
+    del.onclick = function(){
+      if(!confirm('Delete the registration for ' + (r.firstName || '') + ' ' + (r.surname || '') + '? This cannot be undone.')){
+        return;
+      }
+
+      del.disabled = true;
+
+      call('/api/admin/data?id=' + encodeURIComponent(r.id),{
+        method:'DELETE'
+      })
+      .then(function(){
+        delete sel[String(r.id)];
+        return load();
+      })
+      .catch(function(e){
+        alert(e.message || 'Unable to delete this registration.');
+        del.disabled = false;
+      });
+    };
+
+    actions.appendChild(del);
+    tbody.appendChild(row);
   });
-  all.checked=list.length>0&&list.every(function(r){return sel[r.id]});
+
+  t.appendChild(tbody);
+
+  if(list.length === 0){
+    var emptyRow = document.createElement('tr');
+    var emptyCell = document.createElement('td');
+
+    emptyCell.colSpan = H.length + 2;
+    emptyCell.className = 'empty-state';
+
+    emptyCell.appendChild(el('strong','No registrations found'));
+    emptyCell.appendChild(el('span','Try changing your search or filters.'));
+
+    emptyRow.appendChild(emptyCell);
+    tbody.appendChild(emptyRow);
+  }
+
+  updateSelectAll(all,list);
 }
+
+function updateSelectAll(all,list){
+  if(!list.length){
+    all.checked = false;
+    all.indeterminate = false;
+    return;
+  }
+
+  var selected = list.filter(function(r){
+    return !!sel[String(r.id)];
+  }).length;
+
+  all.checked = selected === list.length;
+  all.indeterminate = selected > 0 && selected < list.length;
+}
+
 function markProvince(p,def){
-  if(!confirm('Mark everyone unpaid in province '+p+' as paid?'))return;
-  var ref=prompt('Receipt or payment note (optional)',def||'');
-  if(ref===null)return;
-  post({action:'markProvince',province:p,paid:true,ref:ref}).then(function(r){alert(r.changed+' people marked as paid');load()}).catch(function(e){alert(e.message)});
-}
-function markSelected(paid){
-  var ids=Object.keys(sel);
-  if(!ids.length){alert('Tick at least one person first.');return}
-  var ref='';
-  if(paid){ref=prompt('Receipt or payment note (optional)','');if(ref===null)return}
-  post({action:'mark',ids:ids,paid:paid,ref:ref}).then(function(){sel={};load()}).catch(function(e){alert(e.message)});
-}
-function drawPays(){
-  var by={};
-  rows.forEach(function(r){var k=r.province||'?';var o=by[k]||(by[k]={reg:0,paid:0});o.reg++;if(r.paid==='Yes')o.paid++});
-  var s=$('sum');s.textContent='';
-  var hr=s.insertRow();
-  ['Province','Registered','Paid','Unpaid',''].forEach(function(h){hr.appendChild(el('th',h))});
-  Object.keys(by).sort(num).forEach(function(k){
-    var o=by[k],row=s.insertRow();
-    [k,o.reg,o.paid,o.reg-o.paid].forEach(function(v){row.insertCell().textContent=v});
-    var b=el('button','Mark all paid','small alt');
-    b.onclick=function(){markProvince(k,'')};
-    row.insertCell().appendChild(b);
+  if(!p){
+    alert('Please select an assembly first.');
+    return;
+  }
+
+  var count = rows.filter(function(r){
+    return String(r.province || '') === String(p) && r.paid !== 'Yes';
+  }).length;
+
+  if(count === 0){
+    alert('There are no unpaid registrations in ' + p + '.');
+    return;
+  }
+
+  if(!confirm('Mark all ' + count + ' unpaid registration(s) in ' + p + ' as paid?')){
+    return;
+  }
+
+  var ref = prompt('Receipt or payment note (optional)',def || '');
+
+  if(ref === null){
+    return;
+  }
+
+  post({
+    action:'markProvince',
+    province:p,
+    paid:true,
+    ref:ref
+  })
+  .then(function(r){
+    alert((r.changed == null ? 'Completed' : r.changed) + ' registration(s) marked as paid.');
+    return load();
+  })
+  .catch(function(e){
+    alert(e.message || 'Unable to update assembly payments.');
   });
 }
+
+function markSelected(paid){
+  var ids = Object.keys(sel).filter(function(id){
+    return sel[id];
+  });
+
+  if(!ids.length){
+    alert('Select at least one registration first.');
+    return;
+  }
+
+  var ref = '';
+
+  if(paid){
+    ref = prompt('Receipt or payment note (optional)','');
+
+    if(ref === null){
+      return;
+    }
+  }
+
+  var action = paid ? 'mark as paid' : 'mark as unpaid';
+
+  if(!confirm('Are you sure you want to ' + action + ' ' + ids.length + ' selected registration(s)?')){
+    return;
+  }
+
+  post({
+    action:'mark',
+    ids:ids,
+    paid:paid,
+    ref:ref
+  })
+  .then(function(){
+    sel = {};
+    return load();
+  })
+  .catch(function(e){
+    alert(e.message || 'Unable to update the selected registrations.');
+  });
+}
+
+function drawPays(){
+  var by = {};
+
+  rows.forEach(function(r){
+    var key = String(r.province || 'Unassigned');
+    var item = by[key] || (by[key] = {reg:0,paid:0});
+
+    item.reg++;
+
+    if(r.paid === 'Yes'){
+      item.paid++;
+    }
+  });
+
+  var names = Object.keys(by).sort(compareAssemblies);
+
+  var total = rows.length;
+  var paidTotal = rows.filter(function(r){
+    return r.paid === 'Yes';
+  }).length;
+
+  var rate = total ? Math.round((paidTotal / total) * 100) : 0;
+
+  $('assemblyCount').textContent = names.length;
+  $('assemblyRegistrations').textContent = total;
+  $('paymentRate').textContent = rate + '%';
+  $('paymentProgress').style.width = rate + '%';
+
+  var s = $('sum');
+  s.textContent = '';
+
+  var thead = document.createElement('thead');
+  var tbody = document.createElement('tbody');
+  var hr = document.createElement('tr');
+
+  ['Assembly','Registered','Paid','Unpaid','Payment progress','Action'].forEach(function(h){
+    hr.appendChild(el('th',h));
+  });
+
+  thead.appendChild(hr);
+  s.appendChild(thead);
+
+  names.forEach(function(k){
+    var o = by[k];
+    var row = document.createElement('tr');
+
+    var nameCell = row.insertCell();
+    nameCell.appendChild(el('span',k,'assembly-name'));
+
+    row.insertCell().textContent = o.reg;
+    row.insertCell().textContent = o.paid;
+    row.insertCell().textContent = o.reg - o.paid;
+
+    var progressCell = row.insertCell();
+    var pct = o.reg ? Math.round((o.paid / o.reg) * 100) : 0;
+
+    var progressText = el('div',pct + '%','');
+    progressText.style.fontWeight = '800';
+    progressText.style.fontSize = '11px';
+
+    var track = el('div',null,'progress');
+    track.style.marginTop = '7px';
+
+    var fill = el('div',null,'');
+    fill.style.width = pct + '%';
+
+    track.appendChild(fill);
+    progressCell.appendChild(progressText);
+    progressCell.appendChild(track);
+
+    var actionCell = row.insertCell();
+    var b = el('button','Mark all paid','btn btn-gold btn-small');
+    b.type = 'button';
+    b.disabled = o.reg === o.paid;
+
+    b.onclick = function(){
+      markProvince(k,'');
+    };
+
+    actionCell.appendChild(b);
+    tbody.appendChild(row);
+  });
+
+  if(names.length === 0){
+    var emptyRow = document.createElement('tr');
+    var emptyCell = document.createElement('td');
+
+    emptyCell.colSpan = 6;
+    emptyCell.className = 'empty-state';
+
+    emptyCell.appendChild(el('strong','No registrations yet'));
+    emptyCell.appendChild(el('span','Assembly statistics will appear when registrations are available.'));
+
+    emptyRow.appendChild(emptyCell);
+    tbody.appendChild(emptyRow);
+  }
+
+  s.appendChild(tbody);
+}
+
 function pdf(e){
-  e.preventDefault();
-  var lib=window.jspdf;
-  if(!lib||!lib.jsPDF){window.print();return}
-  var doc=new lib.jsPDF({orientation:'landscape',unit:'pt',format:'a3'});
-  if(typeof doc.autoTable!=='function'){window.print();return}
-  doc.setFontSize(14);
-  doc.text('NYLR 2026 registrations ('+shown.length+')',30,30);
-  doc.autoTable({startY:42,head:[H],body:shown.map(function(r){return K.map(function(k){return r[k]})}),styles:{fontSize:7,cellPadding:3},headStyles:{fillColor:[74,28,11]}});
+  if(e){
+    e.preventDefault();
+  }
+
+  var lib = window.jspdf;
+
+  if(!lib || !lib.jsPDF){
+    window.print();
+    return;
+  }
+
+  var doc = new lib.jsPDF({
+    orientation:'landscape',
+    unit:'pt',
+    format:'a3'
+  });
+
+  if(typeof doc.autoTable !== 'function'){
+    window.print();
+    return;
+  }
+
+  doc.setFontSize(16);
+  doc.setTextColor(74,28,11);
+  doc.text('NYLR 2026 Registrations (' + shown.length + ')',30,30);
+
+  doc.setFontSize(9);
+  doc.setTextColor(100,90,80);
+  doc.text('Vessels Unto Honour | Generated ' + new Date().toLocaleString(),30,44);
+
+  doc.autoTable({
+    startY:55,
+    head:[H],
+    body:shown.map(function(r){
+      return K.map(function(k){
+        var value = r[k];
+
+        if(k === 'createdAt'){
+          return formatDate(value);
+        }
+
+        return value == null ? '' : String(value);
+      });
+    }),
+    styles:{
+      fontSize:7,
+      cellPadding:4,
+      overflow:'linebreak'
+    },
+    headStyles:{
+      fillColor:[74,28,11],
+      textColor:[255,255,255]
+    },
+    alternateRowStyles:{
+      fillColor:[250,247,244]
+    },
+    margin:{
+      left:25,
+      right:25
+    }
+  });
+
   doc.save('nylr-registrations.pdf');
 }
+
 function tab(n){
-  $('regs').hidden=n!==1;$('pays').hidden=n!==2;
-  $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';
+  $('regs').hidden = n !== 1;
+  $('pays').hidden = n !== 2;
+
+  $('t1').className = n === 1 ? 'nav-btn on' : 'nav-btn';
+  $('t2').className = n === 2 ? 'nav-btn on' : 'nav-btn';
+
+  $('pageTitle').textContent = n === 1 ? 'Registrations' : 'Assembly overview';
+
+  $('pageSubtitle').textContent = n === 1
+    ? 'Manage attendees, payments and registration records.'
+    : 'Monitor registration numbers and payment progress by assembly.';
 }
-$('t1').onclick=function(){tab(1)};
-$('t2').onclick=function(){tab(2)};
-$('markSel').onclick=function(){markSelected(true)};
-$('unmarkSel').onclick=function(){markSelected(false)};
-$('markProv').onclick=function(){var p=$('prov').value;if(!p){alert('Choose a province number first.');return}markProvince(p,'')};
-$('pdf').onclick=pdf;
-$('in').onclick=login;
-$('pw').onkeydown=function(e){if(e.key==='Enter')login()};
-$('q').oninput=drawRegs;$('prov').onchange=drawRegs;$('st').onchange=drawRegs;
-load();
-</script></body></html>
+
+$('loginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  login();
+});
+
+$('t1').onclick = function(){
+  tab(1);
+};
+
+$('t2').onclick = function(){
+  tab(2);
+};
+
+$('markSel').onclick = function(){
+  markSelected(true);
+};
+
+$('unmarkSel').onclick = function(){
+  markSelected(false);
+};
+
+$('markProv').onclick = function(){
+  var p = $('prov').value;
+
+  if(!p){
+    alert('Choose an assembly from the filter first.');
+    return;
+  }
+
+  markProvince(p,'');
+};
+
+$('pdf').onclick = pdf;
+$('refresh').onclick = load;
+$('refresh2').onclick = load;
+$('q').oninput = drawRegs;
+$('prov').onchange = drawRegs;
+$('st').onchange = drawRegs;
+
+load().catch(function(){});
+</script>
+</body>
+</html>
