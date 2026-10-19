@@ -1,31 +1,70 @@
 import { db, api } from '../../lib/db';
 
-const LEVELS = ['Secondary school', 'Awaiting Admission', 'Undergraduate', 'Graduate'];
+const LEVELS = [
+  'Secondary school',
+  'Awaiting Admission',
+  'Undergraduate',
+  'Graduate'
+];
+
+const ASSEMBLIES = [
+  'Region HQ',
+  'LP 33',
+  'LP 55',
+  'LP 62',
+  'LP 98',
+  'LP 99',
+  'LP 107'
+];
+
 const PHONE = /^[+]?[0-9 -]{7,18}$/;
 const DOB = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 const EMAIL = /^[^ @]+@[^ @]+[.][^ @]+$/;
-export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4mb'
+    }
+  }
+};
 
 const FILE = /^data:(image[/](jpeg|png)|application[/]pdf);base64,[A-Za-z0-9+/=]+$/;
+
 const hits = global._regHits || (global._regHits = {});
-const t = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+
+const t = (v, n) =>
+  String(v == null ? '' : v).trim().slice(0, n);
 
 async function addToBrevo(d) {
   const key = process.env.BREVO_API_KEY;
   const list = Number(process.env.BREVO_LIST_ID);
+
   if (!key) return false;
+
   try {
     const r = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
-      headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+      headers: {
+        'api-key': key,
+        'content-type': 'application/json',
+        accept: 'application/json'
+      },
       body: JSON.stringify({
         email: d.email,
-        attributes: { FIRSTNAME: d.firstName, LASTNAME: d.surname },
+        attributes: {
+          FIRSTNAME: d.firstName,
+          LASTNAME: d.surname
+        },
         ...(list ? { listIds: [list] } : {}),
-        updateEnabled: true,
-      }),
+        updateEnabled: true
+      })
     });
-    if (!r.ok) console.error('Brevo rejected contact:', r.status);
+
+    if (!r.ok) {
+      console.error('Brevo rejected contact:', r.status);
+    }
+
     return r.ok;
   } catch (e) {
     console.error('Brevo error:', e);
@@ -36,17 +75,34 @@ async function addToBrevo(d) {
 export default api(async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed.' });
+
+    return res.status(405).json({
+      error: 'Method not allowed.'
+    });
   }
 
   const b = req.body || {};
-  if (b.website) return res.status(200).json({ ok: true });
 
-  const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0] || 'x';
+  if (b.website) {
+    return res.status(200).json({
+      ok: true
+    });
+  }
+
+  const ip = String(
+    req.headers['x-forwarded-for'] || ''
+  ).split(',')[0] || 'x';
+
   const now = Date.now();
-  const recent = (hits[ip] || []).filter((x) => now - x < 3600000);
+
+  const recent = (hits[ip] || []).filter(
+    (x) => now - x < 3600000
+  );
+
   if (recent.length >= 200) {
-    return res.status(429).json({ error: 'Too many registrations. Please try again later.' });
+    return res.status(429).json({
+      error: 'Too many registrations. Please try again later.'
+    });
   }
 
   const d = {
@@ -63,54 +119,120 @@ export default api(async (req, res) => {
     parentPhone: t(b.parentPhone, 20),
     academicLevel: t(b.academicLevel, 30),
     allergies: t(b.allergies, 300),
-    health: t(b.health, 300),
+    health: t(b.health, 300)
   };
 
-  const required = ['firstName', 'surname', 'dob', 'gender', 'phone', 'email', 'province', 'coordinatorName', 'coordinatorPhone', 'parentName', 'parentPhone', 'academicLevel'];
+  const required = [
+    'firstName',
+    'surname',
+    'dob',
+    'gender',
+    'phone',
+    'email',
+    'province',
+    'coordinatorName',
+    'coordinatorPhone',
+    'parentName',
+    'parentPhone',
+    'academicLevel'
+  ];
+
   if (required.some((k) => !d[k])) {
-    return res.status(400).json({ error: 'Please fill in all required fields.' });
+    return res.status(400).json({
+      error: 'Please fill in all required fields.'
+    });
   }
 
   if (b.consent !== 'yes' && b.consent !== true) {
-    return res.status(400).json({ error: 'Please tick the box to receive event updates.' });
+    return res.status(400).json({
+      error: 'Please tick the box to receive event updates.'
+    });
   }
 
-  const num = Number(d.province);
-  if (!/^[0-9]{1,3}$/.test(d.province) || num < 1 || num > 100) {
-    return res.status(400).json({ error: 'Choose a province number from 1 to 100.' });
+  // Validate the selected assembly.
+  if (!ASSEMBLIES.includes(d.province)) {
+    return res.status(400).json({
+      error: 'Please select a valid assembly.'
+    });
   }
 
   if (!EMAIL.test(d.email)) {
-    return res.status(400).json({ error: 'Enter a valid email address.' });
+    return res.status(400).json({
+      error: 'Enter a valid email address.'
+    });
   }
 
   const birth = new Date(d.dob + 'T00:00:00Z');
-  if (!DOB.test(d.dob) || Number.isNaN(birth.getTime()) || birth.toISOString().slice(0, 10) !== d.dob || birth > new Date()) {
-    return res.status(400).json({ error: 'Enter a valid date of birth.' });
+
+  if (
+    !DOB.test(d.dob) ||
+    Number.isNaN(birth.getTime()) ||
+    birth.toISOString().slice(0, 10) !== d.dob ||
+    birth > new Date()
+  ) {
+    return res.status(400).json({
+      error: 'Enter a valid date of birth.'
+    });
   }
 
-  if (!['Male', 'Female'].includes(d.gender) || !LEVELS.includes(d.academicLevel)) {
-    return res.status(400).json({ error: 'Check your gender and academic level.' });
+  if (
+    !['Male', 'Female'].includes(d.gender) ||
+    !LEVELS.includes(d.academicLevel)
+  ) {
+    return res.status(400).json({
+      error: 'Check your gender and academic level.'
+    });
   }
 
-  if (![d.phone, d.coordinatorPhone, d.parentPhone].every((p) => PHONE.test(p))) {
-    return res.status(400).json({ error: 'Enter valid phone numbers.' });
+  if (
+    ![d.phone, d.coordinatorPhone, d.parentPhone].every(
+      (p) => PHONE.test(p)
+    )
+  ) {
+    return res.status(400).json({
+      error: 'Enter valid phone numbers.'
+    });
   }
 
   const receipt = String(b.receipt || '');
+
   if (receipt.length > 2800000 || !FILE.test(receipt)) {
-    return res.status(400).json({ error: 'Upload your payment receipt (photo, screenshot or PDF under 2 MB).' });
+    return res.status(400).json({
+      error: 'Upload your payment receipt (photo, screenshot or PDF under 2 MB).'
+    });
   }
 
   const collection = (await db()).collection('registrations');
 
-  const key = [d.phone.replace(/[^0-9]/g, ''), d.surname.toLowerCase(), d.firstName.toLowerCase()].join('|');
+  const key = [
+    d.phone.replace(/[^0-9]/g, ''),
+    d.surname.toLowerCase(),
+    d.firstName.toLowerCase()
+  ].join('|');
+
   if (await collection.findOne({ key })) {
-    return res.status(409).json({ error: 'You have already registered.' });
+    return res.status(409).json({
+      error: 'You have already registered.'
+    });
   }
 
   const brevo = await addToBrevo(d);
+
   hits[ip] = recent.concat(now);
-  await collection.insertOne({ ...d, key, consent: true, brevo, receipt, hasReceipt: true, paid: false, createdAt: new Date() });
-  return res.status(201).json({ ok: true, message: 'Registration successful.' });
+
+  await collection.insertOne({
+    ...d,
+    key,
+    consent: true,
+    brevo,
+    receipt,
+    hasReceipt: true,
+    paid: false,
+    createdAt: new Date()
+  });
+
+  return res.status(201).json({
+    ok: true,
+    message: 'Registration successful.'
+  });
 });
