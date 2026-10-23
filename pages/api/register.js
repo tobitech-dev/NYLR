@@ -17,6 +17,16 @@ const ASSEMBLIES = [
   'LP 107'
 ];
 
+const TSHIRT_SIZES = [
+  'XS',
+  'S',
+  'M',
+  'L',
+  'XL',
+  'XXL',
+  'XXXL'
+];
+
 const PHONE = /^[+]?[0-9 -]{7,18}$/;
 const DOB = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 const EMAIL = /^[^ @]+@[^ @]+[.][^ @]+$/;
@@ -118,6 +128,7 @@ export default api(async (req, res) => {
     parentName: t(b.parentName, 100),
     parentPhone: t(b.parentPhone, 20),
     academicLevel: t(b.academicLevel, 30),
+    tshirtSize: t(b.tshirtSize, 10).toUpperCase(),
     allergies: t(b.allergies, 300),
     health: t(b.health, 300)
   };
@@ -134,7 +145,8 @@ export default api(async (req, res) => {
     'coordinatorPhone',
     'parentName',
     'parentPhone',
-    'academicLevel'
+    'academicLevel',
+    'tshirtSize'
   ];
 
   if (required.some((k) => !d[k])) {
@@ -153,6 +165,13 @@ export default api(async (req, res) => {
   if (!ASSEMBLIES.includes(d.province)) {
     return res.status(400).json({
       error: 'Please select a valid assembly.'
+    });
+  }
+
+  // Validate the selected T-shirt size.
+  if (!TSHIRT_SIZES.includes(d.tshirtSize)) {
+    return res.status(400).json({
+      error: 'Please select a valid T-shirt size.'
     });
   }
 
