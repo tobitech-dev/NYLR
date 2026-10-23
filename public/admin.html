@@ -82,76 +82,66 @@ input:focus,select:focus{
   place-items:center;
   padding:22px;
   background:
-    radial-gradient(ellipse at top left,rgba(233,163,25,.16),transparent 40%),
-    radial-gradient(ellipse at bottom right,rgba(74,28,11,.18),transparent 45%),
-    #f8f4ef;
+    radial-gradient(ellipse at top left,rgba(233,163,25,.22),transparent 45%),
+    radial-gradient(ellipse at bottom right,rgba(233,163,25,.10),transparent 45%),
+    linear-gradient(180deg,#321307,#1d0d07);
 }
 
 .login-card{
   width:100%;
-  max-width:420px;
-  padding:36px;
+  max-width:360px;
+  padding:34px 28px 28px;
+  text-align:center;
   background:var(--surface);
-  border:1px solid rgba(74,28,11,.08);
+  border:1px solid rgba(255,255,255,.08);
   border-radius:24px;
-  box-shadow:0 25px 80px rgba(49,24,11,.13);
+  box-shadow:0 30px 90px rgba(0,0,0,.35);
 }
 
 .brand-mark{
-  width:55px;
-  height:55px;
+  width:58px;
+  height:58px;
   display:grid;
   place-items:center;
-  background:var(--primary);
-  color:var(--gold);
-  font-size:25px;
+  margin:0 auto 26px;
+  background:var(--gold);
+  color:#291206;
+  font-size:26px;
   font-weight:900;
-  border-radius:17px;
-  margin-bottom:25px;
+  border-radius:18px;
+  box-shadow:0 8px 22px rgba(233,163,25,.35);
 }
 
-.login-card h1{
-  font-size:27px;
-  letter-spacing:-.8px;
-  line-height:1.2;
+.login-card input{
+  min-height:50px;
+  padding:12px 16px;
+  text-align:center;
+  border-radius:13px;
+  border:1.5px solid #e5ddd6;
+  background:var(--surface-2);
 }
 
-.login-card .subtitle{
-  margin-top:9px;
-  color:var(--muted);
-  font-size:13px;
+.login-card input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 4px rgba(233,163,25,.18);
 }
-
-.login-card label{
-  display:block;
-  margin:24px 0 8px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.login-card input{min-height:48px}
 
 .login-btn{
   width:100%;
-  padding:13px;
-  margin-top:15px;
+  min-height:50px;
+  margin-top:12px;
   background:var(--primary);
-  color:white;
-  border-radius:12px;
+  color:#fff;
+  border-radius:13px;
   font-weight:800;
 }
 
 .login-btn:hover{background:var(--primary-dark)}
 
-.login-footer{
-  margin-top:22px;
-  color:var(--muted);
-  text-align:center;
-  font-size:11px;
-}
-
 #msg{
   margin-top:12px;
+  text-align:center;
+  min-height:0;
   color:var(--red);
   font-weight:700;
   font-size:13px;
@@ -683,17 +673,13 @@ td:first-child,th:first-child{padding-left:18px}
 <div class="login-page" id="login">
   <div class="login-card">
     <div class="brand-mark">N</div>
-    <h1>Team Dashboard</h1>
-    <p class="subtitle">NYLR 2026 · Administrative access</p>
 
     <form id="loginForm">
-      <label for="pw">Admin password</label>
-      <input id="pw" type="password" placeholder="Enter your admin password" autocomplete="current-password" required>
-      <button class="login-btn" id="in" type="submit">Sign in to dashboard →</button>
+      <input id="pw" type="password" placeholder="Password" aria-label="Admin password" autocomplete="current-password" required>
+      <button class="login-btn" id="in" type="submit">Sign in</button>
     </form>
 
     <p id="msg" role="alert" aria-live="polite"></p>
-    <p class="login-footer">Vessels Unto Honour · 6–8 November 2026</p>
   </div>
 </div>
 
@@ -779,7 +765,7 @@ td:first-child,th:first-child{padding-left:18px}
           <div class="toolbar">
             <div class="search-box">
               <span class="search-icon">⌕</span>
-              <input id="q" type="search" placeholder="Search name, phone, email, assembly..." aria-label="Search registrations">
+              <input id="q" type="search" placeholder="Search name, phone, email, assembly, T-shirt size..." aria-label="Search registrations">
             </div>
 
             <select id="prov" aria-label="Filter by assembly">
@@ -889,6 +875,7 @@ var H = [
   'Parent name',
   'Parent phone',
   'Academic level',
+  'T-shirt size',
   'Allergies',
   'Health challenges',
   'Payment status',
@@ -909,6 +896,7 @@ var K = [
   'parentName',
   'parentPhone',
   'academicLevel',
+  'tshirtSize',
   'allergies',
   'health',
   'paid',
@@ -1003,7 +991,7 @@ function login(){
   })
   .finally(function(){
     $('in').disabled = false;
-    $('in').textContent = 'Sign in to dashboard →';
+    $('in').textContent = 'Sign in';
   });
 }
 
