@@ -84,6 +84,16 @@ var CONTACT={whatsapp:''};
 
 var PROVINCES=['Region HQ','LP 33','LP 55','LP 62','LP 98','LP 99','LP 107'];
 
+var TSHIRT_SIZES=[
+  ['XS','XS - Extra Small'],
+  ['S','S - Small'],
+  ['M','M - Medium'],
+  ['L','L - Large'],
+  ['XL','XL - Extra Large'],
+  ['XXL','XXL - Double Extra Large'],
+  ['XXXL','XXXL - Triple Extra Large']
+];
+
 var F=[
 ['firstName','First name','text'],
 ['surname','Surname','text'],
@@ -96,6 +106,7 @@ var F=[
 ['coordinatorPhone','Phone number of Provincial Coordinator','tel'],
 ['parentName',"Parent's name",'text'],
 ['academicLevel','Academic level','select',['Secondary school','Awaiting Admission','Undergraduate','Graduate']],
+['tshirtSize','T-shirt size','select',TSHIRT_SIZES],
 ['parentPhone',"Parent's phone number",'tel'],
 ['allergies','Any allergies? If yes, please share details','textarea'],
 ['health','Any health challenges? If yes, please share details','textarea']
@@ -131,8 +142,13 @@ F.forEach(function(x){
 
     opts.forEach(function(o){
       var op=document.createElement('option');
-      op.value=o;
-      op.textContent=o;
+      if(Array.isArray(o)){
+        op.value=o[0];
+        op.textContent=o[1];
+      }else{
+        op.value=o;
+        op.textContent=o;
+      }
       el.appendChild(op);
     });
   }else if(x[2]==='textarea'){
